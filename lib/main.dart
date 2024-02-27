@@ -87,17 +87,6 @@ import 'package:flutter/material.dart';
 import 'localization/app_localization.dart';
 
 
-// void main() {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   Future.wait([
-//     SystemChrome.setPreferredOrientations([
-//       DeviceOrientation.portraitUp,
-//     ]),
-//     PrefUtils().init()
-//   ]).then((value) {
-//     runApp(MyApp());
-//   });
-// }
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
