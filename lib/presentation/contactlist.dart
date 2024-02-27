@@ -1,5 +1,4 @@
 
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -53,15 +52,16 @@ class _ContactSearchState extends State<ContactSearch> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
-                _inviteContact(contact); // Add the contact after confirmation
+                // Add the contact after confirmation
               },
-              child: Text('Yes',style: TextStyle(color: Color(0xFF4C2559)),),
+              child: Text('No',style: TextStyle(color: Color(0xFF4C2559)),),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
+                _inviteContact(contact);// Close the dialog
               },
-              child: Text('No',style: TextStyle(color: Color(0xFF4C2559)),),
+              child: Text('Yes',style: TextStyle(color: Color(0xFF4C2559)),),
             ),
           ],
         );

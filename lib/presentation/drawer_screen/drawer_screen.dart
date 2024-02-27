@@ -1,5 +1,6 @@
 
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../Feedback_screen/Feedback_screen.dart';
@@ -8,6 +9,7 @@ import '../history_two_screen/history_two_screen.dart';
 import '../language.dart';
 import '../legal.dart';
 import '../settings.dart';
+import '../sign_up_login_screen/sign_up_login_screen.dart';
 
 
 
@@ -22,6 +24,11 @@ class _DrawerscreenState extends State<Drawerscreen> {
 
 
   bool isSwitched = false;
+  void logout() async {
+    await FirebaseAuth.instance.signOut();
+    Utils.showToast("Logged out successfully");
+    // Navigate back to the login screen or any other screen as needed
+  }
 
 
   @override
@@ -944,18 +951,16 @@ class _DrawerscreenState extends State<Drawerscreen> {
                   Positioned(
                     left: 120,
                     top: 665,
-                    child: Container(
-                      width: 145,
-                      height: 74,
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 0,
-                            top: 0,
-                            child: InkWell(
-                              onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Drawerscreen()));
-                              },
+                    child: GestureDetector(
+                      onTap: logout,
+                      child: Container(
+                        width: 145,
+                        height: 74,
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              left: 0,
+                              top: 0,
                               child: Container(
                                 width: 145,
                                 height: 74,
@@ -980,41 +985,41 @@ class _DrawerscreenState extends State<Drawerscreen> {
                                 ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            left: 73,
-                            top: 30,
-                            child: SizedBox(
-                              width: 44,
-                              height: 14,
-                              child: Text(
-                                'Logout',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xFF5C343E),
-                                  fontSize: 11,
-                                  fontFamily: 'Arial',
-                                  fontWeight: FontWeight.w400,
-                                  height: 0,
+                            Positioned(
+                              left: 73,
+                              top: 30,
+                              child: SizedBox(
+                                width: 44,
+                                height: 14,
+                                child: Text(
+                                  'Logout',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Color(0xFF5C343E),
+                                    fontSize: 11,
+                                    fontFamily: 'Arial',
+                                    fontWeight: FontWeight.w400,
+                                    height: 0,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            left: 28,
-                            top: 23,
-                            child: Container(
-                              width: 25,
-                              height: 28,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage("assets/logout_4400314.png"),
-                                  fit: BoxFit.fill,
+                            Positioned(
+                              left: 28,
+                              top: 23,
+                              child: Container(
+                                width: 25,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage("assets/logout_4400314.png"),
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

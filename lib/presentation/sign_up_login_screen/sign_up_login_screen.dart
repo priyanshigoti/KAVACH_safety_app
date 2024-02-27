@@ -368,10 +368,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kavach_project/localization/app_localization.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/utils/image_constant.dart';
+import '../../theme/custom_button_style.dart';
+import '../../theme/custom_text_style.dart';
 import '../../theme/theme_helper.dart';
+import '../../widgets/custom_image_view.dart';
+import '../../widgets/custom_outlined_button.dart';
 import '../Sign_up_screen/Sign_up_screen.dart';
 import '../home_page/home_page.dart';
 
@@ -393,6 +399,63 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
+
+  void initState() {
+    super.initState();
+    // Check if user is already signed in
+    checkCurrentUser();
+  }
+
+  void checkCurrentUser() {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        // User is signed in
+        navigateToHomePage();
+      }
+    });
+  }
+
+  void navigateToHomePage() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    );
+  }
+
+  FirebaseAuth _auth=FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  Future<void> _signInWithGoogle() async {
+    try {
+      // Trigger the Google Sign-In flow
+      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        // Obtain the GoogleSignInAuthentication object
+        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+
+        // Create a new credential
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        // Sign in to Firebase with the Google credential
+        final UserCredential userCredential = await _auth.signInWithCredential(credential);
+
+        // Get the user information
+        final User? user = userCredential.user;
+
+        if (user != null) {
+          // Navigate to your desired screen after successful login
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
+        }
+      }
+    } catch (error) {
+      print('Error signing in with Google: $error');
+      // Handle sign-in errors here
+    }
+  }
 
   void login() {
     if (_formkey.currentState!.validate()) {
@@ -516,6 +579,78 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                             ),
                           ),
                         ),
+                        Padding(
+                          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.021,),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.02),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        top: MediaQuery.of(context).size.height * 0.004,
+                                        bottom: MediaQuery.of(context).size.height * 0.01,
+                                      ),
+                                      child: Divider(
+                                        color: appTheme.black900,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.02),
+                                    child: Text(
+                                      "lbl_or".tr,
+                                      style: CustomTextStyles.bodyMedium15,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                        top: MediaQuery.of(context).size.height * 0.004,
+                                        bottom: MediaQuery.of(context).size.height * 0.01,
+                                      ),
+                                      child: Divider(
+                                        color: appTheme.black900,
+                                        // indent: MediaQuery.of(context).size.width * 0.02,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.only(left: 3,top: 11,right: 3),
+                          child: CustomOutlinedButton(
+                            onPressed: _signInWithGoogle,
+                            text: "msg_continue_with_google".tr,
+
+                            margin: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width * 0.004,
+                              right: MediaQuery.of(context).size.width * 0.002,
+                              top: MediaQuery.of(context).size.height * 0.002,
+                              bottom: MediaQuery.of(context).size.height * 0.002,
+                            ),
+                            leftIcon: Container(
+                              margin: EdgeInsets.only(right: MediaQuery.of(context).size.width * 0.03),
+                              child: CustomImageView(
+                                imagePath: ImageConstant
+                                    .imgVecteezygooglelogoontransparentbackgroundpopularsearchengine292849641,
+                                height: MediaQuery.of(context).size.height * 0.02,
+                                width: MediaQuery.of(context).size.height * 0.02,
+
+                              ),
+                            ),
+                            buttonStyle: CustomButtonStyles.outlineErrorContainer,
+                            buttonTextStyle: CustomTextStyles.bodySmallBlack90012,
+                          ),
+                        ),
                         SizedBox(height: MediaQuery.of(context).size.height * 0.06,),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -538,7 +673,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height:MediaQuery.of(context).size.height * 0.4, ),
+                        SizedBox(height:MediaQuery.of(context).size.height * 0.3, ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -642,15 +777,15 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
         children: [
           Image.asset(
             "assets/log6.png",
-            width: MediaQuery.of(context).size.width * 0.20,
-            height: MediaQuery.of(context).size.height * 0.20,
+            width: MediaQuery.of(context).size.width * 0.25,
+            height: MediaQuery.of(context).size.height * 0.25,
           ),
           Positioned(
-            left: MediaQuery.of(context).size.width * 0.15 + 9.0,
-            top: MediaQuery.of(context).size.height * 0.037,
+            left: MediaQuery.of(context).size.width * 0.18 + 9.0,
+            top: MediaQuery.of(context).size.height * 0.032,
             child: Text(
               "kavach",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 25,fontFamily: 'kalam',fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -674,3 +809,4 @@ class Utils {
 class SignUpLoginProvider extends ChangeNotifier {
   // You can implement provider related logic here if needed
 }
+
