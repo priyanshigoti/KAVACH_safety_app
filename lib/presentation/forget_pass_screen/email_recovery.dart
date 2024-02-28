@@ -145,24 +145,26 @@
 // }
 
 
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
-import 'package:kavach_project/presentation/Newpassword_screen/Newpassword_screen.dart';
 import 'package:pin_code_text_field/pin_code_text_field.dart';
 
-class ForgetPass extends StatefulWidget {
-  const ForgetPass({Key? key}) : super(key: key);
+import 'forget_pass_screen.dart';
+
+class email_recovery extends StatefulWidget {
+  const email_recovery({super.key});
 
   @override
-  State<ForgetPass> createState() => _ForgetPassState();
+  State<email_recovery> createState() => _email_recoveryState();
 }
 
-class _ForgetPassState extends State<ForgetPass> {
+class _email_recoveryState extends State<email_recovery> {
   @override
   Widget build(BuildContext context) {
     String enteredPin = "";
     final pinController=TextEditingController();
+    final emailcontroller=TextEditingController();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -183,18 +185,6 @@ class _ForgetPassState extends State<ForgetPass> {
                         padding: const EdgeInsets.only(left: 10),
                         child: Icon(Icons.arrow_back_ios_new_sharp,size: 25,color: Color(0xFF4C2559),),
                       ),
-                      // Padding(
-                      //   padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.02),
-                      //   child: Container(
-                      //     decoration: BoxDecoration(
-                      //       image: DecorationImage(
-                      //         image: AssetImage("assets/left-arrow_11819409 2.png"),
-                      //       ),
-                      //     ),
-                      //     height: MediaQuery.of(context).size.height * 0.04,
-                      //     width: MediaQuery.of(context).size.width * 0.06,
-                      //   ),
-                      // ),
                       Container(
                         child: Image.asset(
                           'assets/log6.png',
@@ -208,63 +198,72 @@ class _ForgetPassState extends State<ForgetPass> {
                         padding: const EdgeInsets.only(right: 150),
                         child: Text(
                           "kavach",
-                          style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.050, color: Color(0xFF4C2559)),
+                          style: TextStyle(fontFamily:'kalam',fontSize: MediaQuery.of(context).size.width * 0.050, color: Color(0xFF4C2559)),
                         ),
                       ),
                     ],
                   ),
                   Divider(
-                    thickness: MediaQuery.of(context).size.width * 0.012,
+                    thickness: MediaQuery.of(context).size.width * 0.011,
                     color: Colors.grey.shade100,
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.02),
+                    padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.03),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center, // Center horizontally
                       children: [
                         Text(
-                          "Get Your Code",
+                          "Mail Address Here",
                           style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.065, color: Color(0xFF4C2559)),
                         ),
                       ],
                     ),
                   ),
-                //  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                  //  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                   Padding(
                     padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.03, right: MediaQuery.of(context).size.width * 0.03),
                     child: Text(
-                      'Plese enter the 3 didgits code which send you to your email address'  ,
+                      'Enter the email address associated with your google account.',
                       style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.040),
                       textAlign: TextAlign.center, // Align text at the center
                     ),
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-                  OtpTextField(
-                    numberOfFields: 6, // Number of OTP fields
-                    borderColor: Colors.grey, // Border color of OTP fields
-                    focusedBorderColor: Color(0xFF4C2559), // Border color of focused OTP field
-                   // backgroundColor: Colors.transparent, // Background color of OTP fields
-                    textStyle: TextStyle(fontSize: 16), // Text style of OTP text
-                    //width: MediaQuery.of(context).size.width, // Width of OTP field
-                    fieldWidth: 40, // Width of each OTP field
-                    obscureText: true, // Hide OTP text
-                    onCodeChanged: (String value) {
-                      // Handle OTP value changes
-                      print(value);
-                    },
-                    // onSubmit: (String value) {
-                    //   // Handle OTP submission
-                    // },
+                  Padding(
+                    padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.06, right: MediaQuery.of(context).size.width * 0.06),
+                    child: TextFormField(
+                      // validator: (value){
+                      //   if(value!.isEmpty){
+                      //     return "Enter Email";
+                      //   }
+                      //   return null;
+                      // },
+                      style: TextStyle(height: 1.2),
+                      controller: emailcontroller,
+                     // validator: _validateEmail,
+
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.020, horizontal: MediaQuery.of(context).size.width * 0.045),
+                          hintText: "Email",
+                          hintStyle: TextStyle(fontSize: 14),
+                          fillColor: Colors.grey.shade200,
+                          filled: true,
+                          prefixIcon: Icon(Icons.email)
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
                   ),
-
-
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.07),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center, // Center vertically
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => NewPassword()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ForgetPass()));
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF4C2559),
@@ -277,7 +276,7 @@ class _ForgetPassState extends State<ForgetPass> {
                           ),
                         ),
                         child: Text(
-                          "Verify",
+                          "Get code",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: MediaQuery.of(context).size.width * 0.035,
@@ -287,20 +286,7 @@ class _ForgetPassState extends State<ForgetPass> {
                     ],
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-                  Text(
-                    'Didn\'t you receive any code?',
-                    style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035, color: Color(0xFF4C2559)),
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                  InkWell(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ForgetPass()));
-                    },
-                    child: Text(
-                      'RESEND OTP',
-                      style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035, color: Color(0xFF4C2559),decoration: TextDecoration.underline,decorationColor: Color(0xFF4C2559)),
-                    ),
-                  ),
+
                 ],
               ),
             ),
@@ -310,63 +296,3 @@ class _ForgetPassState extends State<ForgetPass> {
     );
   }
 }
-
-
-// import 'package:flutter/material.dart';
-// import 'package:pin_code_text_field/pin_code_text_field.dart';
-//
-// class PinCodePage extends StatefulWidget {
-//   @override
-//   _PinCodePageState createState() => _PinCodePageState();
-// }
-//
-// class _PinCodePageState extends State<PinCodePage> {
-//   String enteredPin = "";
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Pin Code Input'),
-//       ),
-//       body: Center(
-//         child:
-//         PinCodeTextField(
-//           maxLength: 4, // Length of the PIN code
-//           keyboardType: TextInputType.number,
-//           hideCharacter: true, // Mask PIN code with bullets
-//           highlight: true, // Highlight current pin
-//           highlightColor: Colors.blue,
-//           defaultBorderColor: Colors.grey,
-//           hasTextBorderColor: Colors.green,
-//           pinBoxDecoration:
-//           ProvidedPinBoxDecoration.underlinedPinBoxDecoration,
-//           pinTextStyle: TextStyle(fontSize: 20.0),
-//           onTextChanged: (text) {
-//             setState(() {
-//               enteredPin = text;
-//             });
-//           },
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () {
-//           // Validate PIN code or perform an action
-//           if (enteredPin.length == 4) {
-//             print("Entered PIN: $enteredPin");
-//             // You can perform your action here
-//           } else {
-//             print("Please enter a valid PIN");
-//           }
-//         },
-//         child: Icon(Icons.check),
-//       ),
-//     );
-//   }
-// }
-//
-// void main() {
-//   runApp(MaterialApp(
-//     home: PinCodePage(),
-//   ));
-// }

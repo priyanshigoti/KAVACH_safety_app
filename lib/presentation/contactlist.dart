@@ -1,9 +1,7 @@
-
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ContactSearch extends StatefulWidget {
   @override
@@ -11,7 +9,7 @@ class ContactSearch extends StatefulWidget {
 }
 
 class _ContactSearchState extends State<ContactSearch> {
-  late Iterable<Contact> _contacts=[];
+  late Iterable<Contact> _contacts = [];
   late Iterable<Contact> _filteredContacts = [];
   TextEditingController _searchController = TextEditingController();
   List<Contact> _selectedContacts = [];
@@ -20,6 +18,7 @@ class _ContactSearchState extends State<ContactSearch> {
   void initState() {
     super.initState();
     _fetchContacts();
+    _retrieveSelectedContacts();
   }
 
   Future<void> _fetchContacts() async {
@@ -33,54 +32,56 @@ class _ContactSearchState extends State<ContactSearch> {
   void _filterContacts(String query) {
     setState(() {
       _filteredContacts = _contacts.where((contact) =>
-          (contact.displayName ?? '').toLowerCase().contains(query.toLowerCase())
-      );
-
+          (contact.displayName ?? '').toLowerCase().contains(query.toLowerCase()));
     });
   }
 
-
-  //
-  void _addContact(Contact contact) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Invite Contact'),
-          content: Text('Are you sure you want to invite ${contact.displayName}?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                // Add the contact after confirmation
-              },
-              child: Text('No',style: TextStyle(color: Color(0xFF4C2559)),),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _inviteContact(contact);// Close the dialog
-              },
-              child: Text('Yes',style: TextStyle(color: Color(0xFF4C2559)),),
-            ),
-          ],
-        );
-      },
-    );
+  Future<void> _retrieveSelectedContacts() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('selected_contacts').get();
+      List<Contact> selectedContacts = [];
+      querySnapshot.docs.forEach((doc) {
+        String displayName = doc['displayName'];
+        selectedContacts.add(Contact(displayName: displayName));
+      });
+      setState(() {
+        _selectedContacts = selectedContacts;
+      });
+    } catch (e) {
+      print('Error retrieving selected contacts from Firestore: $e');
+    }
   }
 
-  void _inviteContact(Contact contact) {
+  void _addContact(Contact contact) async {
     setState(() {
       if (!_selectedContacts.contains(contact)) {
         _selectedContacts.add(contact);
       }
     });
+    try {
+      await FirebaseFirestore.instance.collection('selected_contacts').add({
+        'displayName': contact.displayName,
+      });
+    } catch (e) {
+      print('Error adding contact to Firestore: $e');
+    }
   }
 
-  void _removeContact(Contact contact) {
+  void _removeContact(Contact contact) async {
     setState(() {
       _selectedContacts.remove(contact);
     });
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('selected_contacts')
+          .where('displayName', isEqualTo: contact.displayName)
+          .get();
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.delete();
+      });
+    } catch (e) {
+      print('Error removing contact from Firestore: $e');
+    }
   }
 
   void _viewSelectedContacts() {
@@ -96,47 +97,6 @@ class _ContactSearchState extends State<ContactSearch> {
   }
 
   @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: TextField(
-  //         controller: _searchController,
-  //         onChanged: _filterContacts,
-  //         decoration: InputDecoration(
-  //
-  //           hintText: 'Search Contacts...',
-  //           focusColor: Colors.black,
-  //         ),
-  //       ),
-  //     ),
-  //     body: _filteredContacts != null
-  //         ? ListView.builder(
-  //       itemCount: _filteredContacts.length,
-  //       itemBuilder: (context, index) {
-  //         Contact contact = _filteredContacts.elementAt(index);
-  //         return ListTile(
-  //           title: Text(contact.displayName ?? ''),
-  //           onTap: () {
-  //             _addContact(contact);
-  //           },
-  //         );
-  //       },
-  //     )
-  //         : Center(
-  //       child: CircularProgressIndicator(),
-  //     ),
-  //     floatingActionButton: _selectedContacts.isNotEmpty
-  //         ? FloatingActionButton.extended(
-  //       onPressed: _viewSelectedContacts,
-  //
-  //
-  //       label: Text('Add SOS Contacts',textAlign: TextAlign.center,),
-  //     )
-  //         : null,
-  //   );
-  // }
-  @override
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -147,17 +107,15 @@ class _ContactSearchState extends State<ContactSearch> {
             hintText: 'Search Contacts...',
             focusColor: Colors.black,
           ),
-          cursorColor: Colors.black, // Set the cursor color to black
-          style: TextStyle(color: Colors.black), // Set the text color to black
+          cursorColor: Colors.black,
+          style: TextStyle(color: Colors.black),
         ),
       ),
-
       body: _filteredContacts != null
           ? ListView.builder(
         itemCount: _filteredContacts.length,
         itemBuilder: (context, index) {
           Contact contact = _filteredContacts.elementAt(index);
-          // Get the first letter of the contact's display name
           String firstLetter = contact.displayName != null && contact.displayName!.isNotEmpty
               ? contact.displayName![0].toUpperCase()
               : '';
@@ -179,17 +137,16 @@ class _ContactSearchState extends State<ContactSearch> {
       floatingActionButton: _selectedContacts.isNotEmpty
           ? FloatingActionButton.extended(
         onPressed: _viewSelectedContacts,
-        label: Text('Add SOS Contacts',textAlign: TextAlign.center,),
+        label: Text('Add SOS Contacts', textAlign: TextAlign.center,),
       )
           : null,
     );
   }
+
   Color _generateRandomColor() {
     final random = Random();
     return Color.fromRGBO(random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
   }
-
-
 }
 
 class SelectedContactsPage extends StatefulWidget {
@@ -206,6 +163,13 @@ class SelectedContactsPage extends StatefulWidget {
 }
 
 class _SelectedContactsPageState extends State<SelectedContactsPage> {
+  void _removeContact(Contact contact) {
+    setState(() {
+      widget.selectedContacts.remove(contact);
+    });
+    widget.onRemoveContact(contact);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -216,22 +180,35 @@ class _SelectedContactsPageState extends State<SelectedContactsPage> {
         itemCount: widget.selectedContacts.length,
         itemBuilder: (context, index) {
           Contact contact = widget.selectedContacts[index];
-          return ListTile(
-            title: Text(contact.displayName ?? ''),
-            trailing: IconButton(
-              icon: Icon(Icons.cancel),
-              onPressed: () {
-                setState(() {
-                  widget.onRemoveContact(contact);
-                });
-              },
+          String firstLetter = contact.displayName != null && contact.displayName!.isNotEmpty
+              ? contact.displayName![0].toUpperCase()
+              : '';
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 7),
+            child: Card(
+              color: Colors.purple.shade50,
+              child:  ListTile(
+                title: Text(contact.displayName ?? ''),
+                leading: CircleAvatar(
+                  backgroundColor: _generateRandomColor(),
+                  child: Text(firstLetter),
+                ),
+                trailing: IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    _removeContact(contact);
+                  },
+                ),
+              ),
             ),
           );
         },
       ),
     );
   }
+
+  Color _generateRandomColor() {
+    final random = Random();
+    return Color.fromRGBO(random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
+  }
 }
-
-
-

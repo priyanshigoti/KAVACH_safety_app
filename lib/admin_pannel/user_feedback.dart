@@ -19,7 +19,8 @@ class _user_feedbackState extends State<user_feedback> {
         centerTitle: true,
         backgroundColor: Color(0xFF4C2559),
       ),
-      body: StreamBuilder<QuerySnapshot>(
+      body:
+      StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('feedback').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

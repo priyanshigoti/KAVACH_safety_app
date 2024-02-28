@@ -177,8 +177,10 @@
 //   }
 // }
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kavach_project/presentation/Feedback_screen/provider/Feedback_screen_provider.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
 
 import 'models/Feedback_screen_model.dart';
@@ -194,6 +196,72 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
   double _feedbackValue = 0.0;
   final feedbackcontroller = TextEditingController();
   final emailcontroller = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+
+
+  void _addfeedback() async {
+    String email = emailcontroller.text;
+    String feedback = feedbackcontroller.text;
+
+    // Validate if email and feedback are not empty
+    if (email.isNotEmpty || feedback.isNotEmpty) {
+      // Check if the email is valid
+      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+        _showErrorDialog('Invalid Email', 'Please enter a valid email address.');
+        return;
+      }
+
+      await _firestore.collection('feedback').add({
+        'email': email,
+        'feedback': feedback,
+      });
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Feedback Added!'),
+            content: Text('Thank you for your feedback.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK',style: TextStyle(color: Color(0xFF4C2559)),),
+              ),
+            ],
+          );
+        },
+      );
+
+      // Navigator.push(context, MaterialPageRoute(builder: (context)=> user_feedback()));
+    } else {
+      // Show error dialog if fields are empty
+      _showErrorDialog('Fields Empty', 'Please fill in both email and feedback fields.');
+    }
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -327,6 +395,7 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
                         child: TextFormField(
                           style: TextStyle(color: Colors.black, fontSize: 17),
                           controller: emailcontroller,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -336,9 +405,7 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
                       ),
                       SizedBox(height: MediaQuery.of(context).size.height * 0.04,),
                       ElevatedButton(
-                        onPressed: (){
-
-                        },
+                        onPressed: _addfeedback,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF4C2559),
                           shape: RoundedRectangleBorder(
@@ -375,17 +442,6 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
       return 'assets/confusedface.png';
     } else {
       return 'assets/sadface.png';
-    }
-  }
-
-  void _submitFeedback(BuildContext context) {
-    final feedbackProvider = Provider.of<FeedbackProvider>(context, listen: false);
-    final feedback = feedbackcontroller.text;
-    final email = emailcontroller.text;
-
-    if (feedback.isNotEmpty && email.isNotEmpty) {
-      feedbackProvider.setFeedback(FeedbackModel(feedback: feedback, email: email));
-      // You can handle further actions here like showing a success message or navigating to another screen.
     }
   }
 }

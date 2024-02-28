@@ -1,10 +1,12 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:kavach_project/admin_pannel/userlist.dart';
+import 'package:kavach_project/presentation/forget_pass_screen/email_recovery.dart';
+import 'package:kavach_project/presentation/forget_pass_screen/forget_pass_screen.dart';
 
 import '../National_helpline_screen/National_helpline_screen.dart';
 import '../drawer_screen/drawer_screen.dart';
-import '../helpline_call.dart';
 import '../profile_screen/profile_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -267,7 +269,7 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: CupertinoButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>email_recovery()));
               },
               child: Icon(CupertinoIcons.person,color: Color(0xFF4C2559)),
             ),

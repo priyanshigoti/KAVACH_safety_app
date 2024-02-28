@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
-import '../presentation/friend_tab_container_screen/friend_tab_container_screen.dart';
 import '../presentation/history_three_tab_container_screen/history_three_tab_container_screen.dart';
 import '../presentation/history_two_screen/history_two_screen.dart';
 import '../presentation/password_screen/password_screen.dart';
@@ -48,7 +47,6 @@ class AppRoutes {
         //forgetPassScreen: ForgetPass.builder,
      //   drawerScreen: DrawerScreen.builder,
         profileScreen: ProfileScreen.builder,
-        friendTabContainerScreen: FriendTabContainerScreen.builder,
         historyTwoScreen: HistoryTwoScreen.builder,
         historyThreeTabContainerScreen: HistoryThreeTabContainerScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,

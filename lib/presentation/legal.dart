@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -71,7 +70,7 @@ class _LegalState extends State<Legal> {
 
                               ),
                               height: MediaQuery.of(context).size.width * 0.14,
-                                 width: MediaQuery.of(context).size.width * 0.88,
+                              width: MediaQuery.of(context).size.width * 0.88,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -81,9 +80,9 @@ class _LegalState extends State<Legal> {
                                   ),
                                   SizedBox(width: 133.5,),
                                   Container(
-                                    height: 25,width: 25,
+                                      height: 25,width: 25,
                                       child: Image(image: AssetImage("assets/up-right-arrow_4664830.png"))),
-                                //  IconButton(onPressed: (){}, icon: Icon(Icons.upload_sharp)),
+                                  //  IconButton(onPressed: (){}, icon: Icon(Icons.upload_sharp)),
                                 ],
                               ),
                             ),
@@ -246,4 +245,3 @@ class _LegalState extends State<Legal> {
     );
   }
 }
-
