@@ -478,7 +478,7 @@ class _DrawerscreenState extends State<Drawerscreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => Addfriend()));
                         }),
                         buildMenuContainer("assets/to-do-list.png", "Blocklist", context, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => Addfriend()));
+                       //   Navigator.push(context, MaterialPageRoute(builder: (context) => Addfriend()));
                         }),
                       ],
                     ),

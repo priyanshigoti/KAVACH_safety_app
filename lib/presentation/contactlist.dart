@@ -1,3 +1,5 @@
+
+
 import 'dart:math';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -99,7 +101,7 @@ class _ContactSearchState extends State<ContactSearch> {
   void initState() {
     super.initState();
     _fetchContacts();
-    _fetchSelectedContacts(); // Fetch selected contacts from Firestore
+    _fetchSelectedContacts();
   }
 
   Future<void> _fetchContacts() async {
@@ -133,8 +135,78 @@ class _ContactSearchState extends State<ContactSearch> {
   void _filterContacts(String query) {
     setState(() {
       _filteredContacts = _contacts.where((contact) =>
-          (contact.displayName ?? '').toLowerCase().contains(query.toLowerCase()));
+          (contact.displayName ?? '')
+              .toLowerCase()
+              .contains(query.toLowerCase()));
     });
+  }
+
+  Future<void> _showAddContactDialog(Contact contact) async {
+    String displayName = contact.displayName ?? '';
+    if (_selectedContacts.any((c) => c.displayName == displayName)) {
+      // Contact is already added, show alert dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Contact Already Added'),
+            content: Text('This contact has already been added.'),
+            actions: <Widget>[
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF4C2559),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close dialog
+                },
+                child: Text('OK',style: TextStyle(color: Colors.white),),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Contact is not added, show confirmation dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Add Contact'),
+            content: Text('Do you want to add $displayName?'),
+            actions: <Widget>[
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close dialog
+                },
+                child: Text('No',style: TextStyle(color: Color(0xFF4C2559)),),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF4C2559),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                onPressed: () {
+                  _addContact(contact);
+                  Navigator.of(context).pop(); // Close dialog
+                },
+                child: Text('Yes',style: TextStyle(color: Colors.white),),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void _addContact(Contact contact) async {
@@ -172,7 +244,7 @@ class _ContactSearchState extends State<ContactSearch> {
               child: Text(firstLetter),
             ),
             onTap: () {
-              _addContact(contact);
+              _showAddContactDialog(contact);
             },
           );
         },
@@ -209,37 +281,119 @@ class _ContactSearchState extends State<ContactSearch> {
 }
 
 // Define SelectedContactsPage widget
-class SelectedContactsPage extends StatelessWidget {
+class SelectedContactsPage extends StatefulWidget {
   final List<Contact> selectedContacts;
 
-  SelectedContactsPage({required this.selectedContacts});
+  SelectedContactsPage({
+    required this.selectedContacts,
+  });
+
+  @override
+  _SelectedContactsPageState createState() => _SelectedContactsPageState();
+}
+
+class _SelectedContactsPageState extends State<SelectedContactsPage> {
+  late List<Contact> _selectedContacts;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedContacts = widget.selectedContacts;
+  }
+
+  void _removeContact(Contact contact) async {
+    ContactManager().removeContact(contact.displayName ?? '');
+    setState(() {
+      _selectedContacts.remove(contact);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Selected Contacts'),
+        title: Text('Selected Contacts',style:TextStyle(color:Colors.white)),
+        backgroundColor: Color(0xFF4C2559),
       ),
       body: ListView.builder(
-        itemCount: selectedContacts.length,
+        itemCount: _selectedContacts.length,
         itemBuilder: (context, index) {
-          Contact contact = selectedContacts[index];
+          Contact contact = _selectedContacts[index];
           String firstLetter = contact.displayName != null &&
               contact.displayName!.isNotEmpty
               ? contact.displayName![0].toUpperCase()
               : '';
-          return ListTile(
-            title: Text(contact.displayName ?? ''),
-            leading: CircleAvatar(
-              backgroundColor: _generateRandomColor(),
-              child: Text(firstLetter),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Card(
+              color: Colors.grey.shade100,
+              child: ListTile(
+                contentPadding:
+                EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                title: Text(contact.displayName ?? ''),
+                leading: CircleAvatar(
+                  backgroundColor: _generateRandomColor(),
+                  child: Text(firstLetter),
+                ),
+                trailing: ElevatedButton(
+                  onPressed: () {
+                    _showRemoveContactDialog(context, contact);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: Text('Remove', style: TextStyle(color: Colors.white)),
+                ),
+              ),
             ),
-            onTap: () {
-              // Handle onTap
-            },
           );
         },
       ),
+    );
+  }
+
+  Future<void> _showRemoveContactDialog(
+      BuildContext context, Contact contact) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Remove Contact'),
+          content: Text('Do you want to remove ${contact.displayName}?'),
+          actions: <Widget>[
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close dialog
+                },
+                child: Text('No',style: TextStyle(color: Color(0xFF4C2559)),)
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF4C2559),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              onPressed: () {
+                _removeContact(contact);
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
     );
   }
 
