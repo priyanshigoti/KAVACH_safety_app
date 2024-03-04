@@ -19,7 +19,8 @@ class NewPassword extends StatelessWidget {
       body: Consumer<NewPasswordProvider>(
         builder: (context, provider, _) {
           return SingleChildScrollView(
-            child: Column(
+            child:
+            Column(
               children: [
                 Padding(
                   padding: EdgeInsets.only(top: screenHeight * 0.00),

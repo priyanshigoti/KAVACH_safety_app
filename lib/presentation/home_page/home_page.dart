@@ -1,13 +1,17 @@
+
+
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:kavach_project/admin_pannel/userlist.dart';
-
-import 'package:kavach_project/presentation/forget_pass_screen/email_recovery.dart';
-import 'package:kavach_project/presentation/forget_pass_screen/forget_pass_screen.dart';
+import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:kavach_project/presentation/drawer_screen/drawer_screen.dart';
 
 import '../National_helpline_screen/National_helpline_screen.dart';
-import '../drawer_screen/drawer_screen.dart';
 import '../profile_screen/profile_screen.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,6 +22,59 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  GoogleMapController? _controller;
+  LatLng _currentLocation = LatLng(0, 0);
+  Set<Marker> markers = {};
+
+  void initState() {
+    super.initState();
+    _determinePosition();
+    _getCurrentLocation();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _currentLocation = LatLng(position.latitude, position.longitude);
+      });
+      if (_controller != null) {
+        _controller!.animateCamera(CameraUpdate.newLatLng(_currentLocation));
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled');
+    }
+
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+
+      if (permission == LocationPermission.denied) {
+        return Future.error("Location permission denied");
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('Location permissions are permanently denied');
+    }
+
+    Position position = await Geolocator.getCurrentPosition();
+
+    return position;
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -31,198 +88,135 @@ class _HomePageState extends State<HomePage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            width: screenWidth,
-            height: screenHeight * 0.80,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(color: Colors.white),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 0,
-                  top: -1,
-                  child: Container(
-                    width: screenWidth,
-                    height: 87,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          left: 0,
-                          top: 84.5,
-                          child: Container(
-                            width: screenWidth,
-                            decoration: ShapeDecoration(
-                              shape: RoundedRectangleBorder(
-                                side: BorderSide(
-                                  width: screenWidth * 0.0114,
-                                  strokeAlign: BorderSide.strokeAlignCenter,
-                                  color: Colors.grey.shade100,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.01),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        child: Image.asset(
+                          'assets/log6.png',
+                          fit: BoxFit.fill,
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width * 0.21,
+                          height: MediaQuery.of(context).size.width * 0.22,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 155, top: 1),
+                        child: Text(
+                          "kavach",
+                          style: TextStyle(
+                            fontFamily: 'kalam',
+                            fontSize: MediaQuery.of(context).size.width * 0.063,
+                            color: Color(0xFF4C2559),
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                      Spacer(), // To push the menu button to the end
+                      IconButton(
+                        icon: Icon(Icons.menu,size: 30,),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Drawerscreen()));
+                        },
+                      ),
+                    ],
+                  ),
+                  Divider(
+                    thickness: MediaQuery.of(context).size.width * 0.011,
+                    color: Colors.grey.shade100,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.00),
+                    child: Container(
+                      width: double.infinity,
+                      height: 55,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10.0),
+                          bottomRight: Radius.circular(10.0),
+                        ),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.white, Colors.purple.shade50],
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Container(
+                              child: Text(
+                                "Track Me",
+                                style: TextStyle(
+                                  fontSize: MediaQuery.of(context).size.width * 0.045,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF4C2559),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          left: screenWidth * 0.1607,
-                          top: 0,
-                          child: Container(
-                            width: screenWidth * 0.7589,
-                            height: 66,
-                            decoration: BoxDecoration(color: Colors.white),
-                          ),
-                        ),
-                        Positioned(
-                          left: 0,
-                          top: 0,
-                          child: Container(
-                            width: screenWidth * 0.9184,
-                            height: 64,
-                            decoration: BoxDecoration(color: Color(0xFFFFFDFD)),
-                          ),
-                        ),
-                        Positioned(
-                          left: screenWidth * 0.1699,
-                          top: screenHeight * 0.047,
-                          child: SizedBox(
-                            width: screenWidth * 0.1999,
-                            height: screenHeight * 0.0311,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
-                              'Kavach',
-                              textAlign: TextAlign.center,
+                              "Share your live location with your SOS contact",
                               style: TextStyle(
-                                color: Color(0xFF5C343E),
-                                fontSize: screenWidth * 0.0580,
-                                fontFamily: 'kalam',
-                                fontWeight: FontWeight.w700,
-                                height: 0,
+                                fontSize: MediaQuery.of(context).size.width * 0.035,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF4C2559),
                               ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          //left: screenWidth * 0.078,
-                          top: screenHeight * 0.015,
-                          child: Container(
-                            width: screenWidth * 0.1985,
-                            height: screenWidth * 0.2222,
-                            decoration: ShapeDecoration(
-                              image: DecorationImage(
-                                image: AssetImage("assets/log6.png"),
-                                fit: BoxFit.fill,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(screenWidth * 0.4119),
-                              ),
-                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Stack(
+                    children: [
+                      Container(
+                        height: 620,
+                        // color: Colors.purple,
+                        child:  GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                            target: _currentLocation, // Initial map center
+                            zoom: 15.0, // Initial map zoom level
                           ),
-                        ),
-                        // Positioned(
-                        //   left: screenWidth * 0.05,
-                        //   top: screenHeight * 0.05,
-                        //   child: InkWell(
-                        //     onTap: (){
-                        //       Navigator.pop(context);
-                        //     },
-                        //     child: Icon(
-                        //       Icons.arrow_back_ios_new_sharp,
-                        //       color: Color(0xFF4C2559),
-                        //       size: screenWidth * 0.06,
-                        //     ),
-                        //   ),
-                        // ),
-                        Positioned(
-                          left: screenWidth * 0.8799,
-                          top: screenHeight * 0.05,
-                          child: GestureDetector(
-                            onTap: (){
-                              Navigator.push(context,MaterialPageRoute(builder: (context)=>Drawerscreen()));
-                            },
-                            child: Container(
-                              width: screenWidth * 0.0499,
-                              height: screenHeight * 0.0299,
-                              child: Icon(Icons.menu_sharp, color: Color(0xFF4C2559),size: 31,),
+                          onMapCreated: (GoogleMapController controller) {
+                            _controller = controller;
+                          },
+                          myLocationEnabled: true,
+                          myLocationButtonEnabled: false,
+                          // Disable the default "My Location" button
+                          markers: _currentLocation == null
+                              ? {}
+                              : {
+                            Marker(
+                              markerId: MarkerId("current_location"),
+                              position: _currentLocation,
                             ),
-                          ),
+                          },
                         ),
-                        // Positioned(
-                        //   left: screenWidth * 0.7908,
-                        //   top: screenHeight * 0.0520,
-                        //   child: Container(
-                        //     width: screenWidth * 0.0357,
-                        //     height: screenHeight * 0.0197,
-                        //     child: Icon(Icons.notifications_active_outlined, color: Color(0xFF4C2559),size: 26,),
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: screenWidth * 0.0357,
-                  top: screenHeight * 0.140,
-                  child: Text(
-                    'Share live location with your friends',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: screenHeight * 0.016,
-                      fontFamily: 'Arial',
-                      fontWeight: FontWeight.bold,
-                      height: 0,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: screenWidth * 0.0357,
-                  top: screenHeight * 0.1125,
-                  child: Text(
-                    'Track me',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: screenHeight * 0.0204,
-                      fontFamily: 'Arial',
-                      fontWeight: FontWeight.bold,
-                      height: 0,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  top: screenHeight * 0.0999,
-                  child: Container(
-                    width: screenWidth,
-                    height: screenHeight * 0.0738,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          left: 0,
-                          top: 0,
-                          child: Container(
-                            width: screenWidth,
-                            height: screenHeight * 0.0738,
-                            decoration: ShapeDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment(0.00, -1.00),
-                                end: Alignment(0, 2),
-                                colors: [Color(0x00F7E2FF), Colors.purple.shade50],
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(screenHeight * 0.0148),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                      ),
+                    ]
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
@@ -291,5 +285,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+
 
 

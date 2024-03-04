@@ -166,7 +166,8 @@ class _ForgetPassState extends State<ForgetPass> {
 
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
+        child:
+        Column(
           mainAxisAlignment: MainAxisAlignment.center, // Center vertically
           crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
           children: [

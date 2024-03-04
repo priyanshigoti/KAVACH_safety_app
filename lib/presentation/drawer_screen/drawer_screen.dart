@@ -377,7 +377,6 @@ import '../Feedback_screen/Feedback_screen.dart';
 import '../history_two_screen/history_two_screen.dart';
 import '../language.dart';
 import '../legal.dart';
-import '../settings.dart';
 import '../sign_up_login_screen/sign_up_login_screen.dart';
 
 class Drawerscreen extends StatefulWidget {
