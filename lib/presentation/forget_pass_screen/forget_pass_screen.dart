@@ -240,14 +240,16 @@ class _ForgetPassState extends State<ForgetPass> {
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.03),
                   OtpTextField(
-                    numberOfFields: 6, // Number of OTP fields
-                    borderColor: Colors.grey, // Border color of OTP fields
+                    numberOfFields: 4, // Number of OTP fields
+                    borderColor: Colors.grey,
+                    cursorColor: Colors.black,
+                    fillColor: Colors.black,// Border color of OTP fields
+                    keyboardType: TextInputType.number,
                     focusedBorderColor: Color(0xFF4C2559), // Border color of focused OTP field
-                   // backgroundColor: Colors.transparent, // Background color of OTP fields
                     textStyle: TextStyle(fontSize: 16), // Text style of OTP text
                     //width: MediaQuery.of(context).size.width, // Width of OTP field
                     fieldWidth: 40, // Width of each OTP field
-                    obscureText: true, // Hide OTP text
+                    obscureText: false, // Hide OTP text
                     onCodeChanged: (String value) {
                       // Handle OTP value changes
                       print(value);

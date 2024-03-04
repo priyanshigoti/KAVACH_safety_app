@@ -8,7 +8,7 @@ class HelplineProvider extends ChangeNotifier {
   List<HelplineModel> _helplines = [
     HelplineModel(
       title: 'National Helpline',
-      description: 'Common Helpline Numbers are listed here',
+      description: 'Common Helpline Numbers listed here',
       image : 'assets/play-button-arrowhead.png',
       imagePath: "assets/contact-book (1).png",
     ),

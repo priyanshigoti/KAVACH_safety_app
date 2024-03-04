@@ -1,12 +1,10 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kavach_project/localization/app_localization.dart';
+import 'package:kavach_project/presentation/forget_pass_screen/email_recovery.dart';
 import 'package:provider/provider.dart';
-
 import '../../core/utils/image_constant.dart';
 import '../../theme/custom_button_style.dart';
 import '../../theme/custom_text_style.dart';
@@ -14,6 +12,7 @@ import '../../theme/theme_helper.dart';
 import '../../widgets/custom_image_view.dart';
 import '../../widgets/custom_outlined_button.dart';
 import '../Sign_up_screen/Sign_up_screen.dart';
+import '../forget_pass_screen/forget_pass_screen.dart';
 import '../home_page/home_page.dart';
 
 class SignUpLoginScreen extends StatefulWidget {
@@ -31,6 +30,7 @@ class SignUpLoginScreen extends StatefulWidget {
 }
 
 class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
+
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
@@ -60,37 +60,45 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
 
   FirebaseAuth _auth=FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   Future<void> _signInWithGoogle() async {
     try {
-      // Trigger the Google Sign-In flow
+      // Attempt to sign out if already signed in
+      await _googleSignIn.signOut();
+
+      // Start the sign-in flow
       final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
 
-      if (googleSignInAccount != null) {
-        // Obtain the GoogleSignInAuthentication object
-        final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+      if (googleSignInAccount == null) {
+        // User canceled the sign-in flow
+        return;
+      }
 
-        // Create a new credential
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
+      // Obtain the GoogleSignInAuthentication object
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
 
-        // Sign in to Firebase with the Google credential
-        final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      // Create a new credential
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
 
-        // Get the user information
-        final User? user = userCredential.user;
+      // Sign in to Firebase with the Google credential
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
 
-        if (user != null) {
-          // Navigate to your desired screen after successful login
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
-        }
+      // Get the user information
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        // Navigate to your desired screen after successful login
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
       }
     } catch (error) {
       print('Error signing in with Google: $error');
       // Handle sign-in errors here
     }
   }
+
 
   void login() {
     if (_formkey.currentState!.validate()) {
@@ -127,11 +135,13 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
           child: Column(
             children: [
               _buildAppBar(context),
+              _buildStackWithAppBar(context),
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
                     padding: EdgeInsets.symmetric(
                       horizontal: MediaQuery.of(context).size.width * 0.05,
+                      vertical: MediaQuery.of(context).size.height * 0.04,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,12 +151,14 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                           // Replace this with your localization logic
                           style: TextStyle(fontSize: 24),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         TextFormField(
                           controller: emailController,
+                          cursorColor: Colors.black,
+                          style: TextStyle(color: Colors.black),
                           decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.05),
+                                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.03),
                                   borderSide: BorderSide.none
                               ),
                               contentPadding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.02,horizontal: MediaQuery.of(context).size.width * 0.03),
@@ -156,7 +168,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                               filled: true,
                               hintText: "Email",
                               hintStyle: TextStyle(fontSize: 15),
-                              prefixIcon: Icon(Icons.password,size: 16,)
+                              prefixIcon: Icon(Icons.email,size: 16,)
 
                           ),
                           keyboardType: TextInputType.emailAddress,
@@ -172,7 +184,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                           controller: passwordController,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.05),
+                                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.03),
                                   borderSide: BorderSide.none
                               ),
                               contentPadding: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height * 0.02,horizontal: MediaQuery.of(context).size.width * 0.03),
@@ -182,7 +194,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                               filled: true,
                               hintText: "Password",
                               hintStyle: TextStyle(fontSize: 15),
-                              prefixIcon: Icon(Icons.password,size: 16,)
+                              prefixIcon: Icon(Icons.lock,size: 16,)
 
                           ),
                           obscureText: true,
@@ -193,8 +205,18 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                             return null;
                           },
                         ),
-                        SizedBox(height: MediaQuery.of(context).size.height * 0.04),
-                    ElevatedButton(
+                        SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(onPressed: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>email_recovery()));
+                            },
+                                child:Text("Forget Password?",style: TextStyle(color: Color(0xFF4C2559)),),
+                            ),
+                          ],
+                        ),
+                        ElevatedButton(
                           onPressed: login,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF4C2559),
@@ -297,7 +319,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => RegisterScreen(),
+                                    builder: (context) => Register(),
                                   ),
                                 );
                               },
@@ -308,7 +330,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height:MediaQuery.of(context).size.height * 0.3, ),
+                        SizedBox(height:MediaQuery.of(context).size.height * 0.22, ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -368,30 +390,30 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.09,
+            height: MediaQuery.of(context).size.height * 0.001,
             width: MediaQuery.of(context).size.width,
-            child: Stack(
-              alignment: Alignment.centerRight,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height*0.09,
-                  width: MediaQuery.of(context).size.width*0.09,
-                  color: Colors.purple,
-                ),
-                // ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.09,
-                    width: MediaQuery.of(context).size.width * 0.297,
-                    decoration: BoxDecoration(
-                      color:
-                      theme.colorScheme.onPrimaryContainer.withOpacity(1),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            // child: Stack(
+            //   alignment: Alignment.centerRight,
+            //   children: [
+            //     Container(
+            //       height: MediaQuery.of(context).size.height*0.09,
+            //       width: MediaQuery.of(context).size.width*0.09,
+            //       color: Colors.purple,
+            //     ),
+            //     // ),
+            //     Align(
+            //       alignment: Alignment.centerRight,
+            //       child: Container(
+            //         height: MediaQuery.of(context).size.height * 0.09,
+            //         width: MediaQuery.of(context).size.width * 0.297,
+            //         decoration: BoxDecoration(
+            //           color:
+            //           theme.colorScheme.onPrimaryContainer.withOpacity(1),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ),
           SizedBox(height: MediaQuery.of(context).size.height * 0.0001),
           Divider(
@@ -444,4 +466,3 @@ class Utils {
 class SignUpLoginProvider extends ChangeNotifier {
   // You can implement provider related logic here if needed
 }
-

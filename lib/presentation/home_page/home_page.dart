@@ -1,7 +1,7 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kavach_project/admin_pannel/userlist.dart';
+
 import 'package:kavach_project/presentation/forget_pass_screen/email_recovery.dart';
 import 'package:kavach_project/presentation/forget_pass_screen/forget_pass_screen.dart';
 
@@ -45,12 +45,12 @@ class _HomePageState extends State<HomePage> {
                   top: -1,
                   child: Container(
                     width: screenWidth,
-                    height: 85,
+                    height: 87,
                     child: Stack(
                       children: [
                         Positioned(
                           left: 0,
-                          top: 83.5,
+                          top: 84.5,
                           child: Container(
                             width: screenWidth,
                             decoration: ShapeDecoration(
@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
                           top: 0,
                           child: Container(
                             width: screenWidth * 0.7589,
-                            height: 64,
+                            height: 66,
                             decoration: BoxDecoration(color: Colors.white),
                           ),
                         ),
@@ -83,11 +83,11 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         Positioned(
-                          left: screenWidth * 0.2699,
+                          left: screenWidth * 0.1699,
                           top: screenHeight * 0.047,
                           child: SizedBox(
-                            width: screenWidth * 0.1786,
-                            height: screenHeight * 0.0300,
+                            width: screenWidth * 0.1999,
+                            height: screenHeight * 0.0311,
                             child: Text(
                               'Kavach',
                               textAlign: TextAlign.center,
@@ -102,10 +102,10 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         Positioned(
-                          left: screenWidth * 0.0756,
+                          //left: screenWidth * 0.078,
                           top: screenHeight * 0.015,
                           child: Container(
-                            width: screenWidth * 0.2341,
+                            width: screenWidth * 0.1985,
                             height: screenWidth * 0.2222,
                             decoration: ShapeDecoration(
                               image: DecorationImage(
@@ -118,43 +118,43 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ),
+                        // Positioned(
+                        //   left: screenWidth * 0.05,
+                        //   top: screenHeight * 0.05,
+                        //   child: InkWell(
+                        //     onTap: (){
+                        //       Navigator.pop(context);
+                        //     },
+                        //     child: Icon(
+                        //       Icons.arrow_back_ios_new_sharp,
+                        //       color: Color(0xFF4C2559),
+                        //       size: screenWidth * 0.06,
+                        //     ),
+                        //   ),
+                        // ),
                         Positioned(
-                          left: screenWidth * 0.05,
-                          top: screenHeight * 0.05,
-                          child: InkWell(
-                            onTap: (){
-                              Navigator.pop(context);
-                            },
-                            child: Icon(
-                              Icons.arrow_back_ios_new_sharp,
-                              color: Color(0xFF4C2559),
-                              size: screenWidth * 0.06,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          left: screenWidth * 0.8911,
+                          left: screenWidth * 0.8799,
                           top: screenHeight * 0.05,
                           child: GestureDetector(
                             onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => Drawerscreen()));
+                              Navigator.push(context,MaterialPageRoute(builder: (context)=>Drawerscreen()));
                             },
                             child: Container(
-                              width: screenWidth * 0.0485,
-                              height: screenHeight * 0.0221,
+                              width: screenWidth * 0.0499,
+                              height: screenHeight * 0.0299,
                               child: Icon(Icons.menu_sharp, color: Color(0xFF4C2559),size: 31,),
                             ),
                           ),
                         ),
-                        Positioned(
-                          left: screenWidth * 0.7908,
-                          top: screenHeight * 0.0520,
-                          child: Container(
-                            width: screenWidth * 0.0357,
-                            height: screenHeight * 0.0197,
-                            child: Icon(Icons.notifications_active_outlined, color: Color(0xFF4C2559),size: 26,),
-                          ),
-                        ),
+                        // Positioned(
+                        //   left: screenWidth * 0.7908,
+                        //   top: screenHeight * 0.0520,
+                        //   child: Container(
+                        //     width: screenWidth * 0.0357,
+                        //     height: screenHeight * 0.0197,
+                        //     child: Icon(Icons.notifications_active_outlined, color: Color(0xFF4C2559),size: 26,),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -194,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                   top: screenHeight * 0.0999,
                   child: Container(
                     width: screenWidth,
-                    height: screenHeight * 0.0733,
+                    height: screenHeight * 0.0738,
                     child: Stack(
                       children: [
                         Positioned(
@@ -202,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                           top: 0,
                           child: Container(
                             width: screenWidth,
-                            height: screenHeight * 0.0733,
+                            height: screenHeight * 0.0738,
                             decoration: ShapeDecoration(
                               gradient: LinearGradient(
                                 begin: Alignment(0.00, -1.00),
@@ -245,14 +245,19 @@ class _HomePageState extends State<HomePage> {
             label: 'Recordings',
           ),
           BottomNavigationBarItem(
-            icon: Container(
-              width: screenWidth * 0.1147,
-              height: screenHeight * 0.0657,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.red, // Change color as needed
+            icon: GestureDetector(
+              onTap: (){
+                //Navigator.push(context, MaterialPageRoute(builder: (context)=>SOSAlertScreen()));
+              },
+              child: Container(
+                width: screenWidth * 0.1147,
+                height: screenHeight * 0.0657,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.red, // Change color as needed
+                ),
+                child: Image(image: AssetImage("assets/sos_4617104.png")),
               ),
-              child: Image(image: AssetImage("assets/sos_4617104.png")),
             ),
             label: 'SOS',
           ),
@@ -269,7 +274,7 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: CupertinoButton(
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>email_recovery()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
               },
               child: Icon(CupertinoIcons.person,color: Color(0xFF4C2559)),
             ),

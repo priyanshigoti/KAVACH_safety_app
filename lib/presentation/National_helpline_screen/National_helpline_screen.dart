@@ -87,16 +87,16 @@ class _HelplineState extends State<Helpline> {
                         ),
                         Positioned(
                           left: screenWidth * 0.1456,
-                          top: screenHeight * 0.052,
+                          top: screenHeight * 0.049,
                           child: SizedBox(
-                            width: screenWidth * 0.1786,
-                            height: screenHeight * 0.0279,
+                            width: screenWidth * 0.1999,
+                            height: screenHeight * 0.0311,
                             child: Text(
                               'Kavach',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Color(0xFF5C343E),
-                                fontSize: screenWidth * 0.0530,
+                                fontSize: screenWidth * 0.0570,
                                 fontFamily: 'kalam',
                                 fontWeight: FontWeight.w600,
                                 height: 0,
@@ -105,16 +105,19 @@ class _HelplineState extends State<Helpline> {
                           ),
                         ),
                         Positioned(
-                          left: screenWidth * 0.0625,
-                          top: screenHeight * 0.055,
-                          child: InkWell(
-                            onTap: (){
-                              Navigator.pop(context);
-                            },
-                            child: Icon(
-                              Icons.arrow_back_ios_new_sharp,
-                              color: Color(0xFF4C2559),
-                              size: screenWidth * 0.06,
+                          //left: screenWidth * 0.078,
+                          top: screenHeight * 0.015,
+                          child: Container(
+                            width: screenWidth * 0.1985,
+                            height: screenWidth * 0.2122,
+                            decoration: ShapeDecoration(
+                              image: DecorationImage(
+                                image: AssetImage("assets/log6.png"),
+                                fit: BoxFit.fill,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(screenWidth * 0.4119),
+                              ),
                             ),
                           ),
                         ),
@@ -132,20 +135,20 @@ class _HelplineState extends State<Helpline> {
                             ),
                           ),
                         ),
-                        Positioned(
-                          left: screenWidth * 0.7908,
-                          top: screenHeight * 0.051,
-                          child: GestureDetector(
-                            onTap: (){
-                              //    Navigator.push(context, MaterialPageRoute(builder: (context)=>Drawerscreen()));
-                            },
-                            child: Container(
-                              width: screenWidth * 0.0357,
-                              height: screenHeight * 0.0197,
-                              child: Icon(Icons.notifications_active_outlined, color: Color(0xFF4C2559),size: 28,),
-                            ),
-                          ),
-                        ),
+                        // Positioned(
+                        //   left: screenWidth * 0.7908,
+                        //   top: screenHeight * 0.051,
+                        //   child: GestureDetector(
+                        //     onTap: (){
+                        //       //    Navigator.push(context, MaterialPageRoute(builder: (context)=>Drawerscreen()));
+                        //     },
+                        //     child: Container(
+                        //       width: screenWidth * 0.0357,
+                        //       height: screenHeight * 0.0197,
+                        //       child: Icon(Icons.notifications_active_outlined, color: Color(0xFF4C2559),size: 28,),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -182,10 +185,10 @@ class _HelplineState extends State<Helpline> {
                 ),
                 Positioned(
                   left: 0,
-                  top: screenHeight * 0.0947,
+                  top: screenHeight * 0.0989,
                   child: Container(
                     width: screenWidth,
-                    height: screenHeight * 0.0733,
+                    height: screenHeight * 0.0789,
                     child: Stack(
                       children: [
                         Positioned(
@@ -196,7 +199,7 @@ class _HelplineState extends State<Helpline> {
                             height: screenHeight * 0.0733,
                             decoration: ShapeDecoration(
                               gradient: LinearGradient(
-                                begin: Alignment(0.00, -1.00),
+                                begin: Alignment(0.00, -1.2),
                                 end: Alignment(0, 2),
                                 colors: [Color(0x00F7E2FF), Colors.purple.shade50],
                               ),
@@ -237,7 +240,7 @@ class _HelplineState extends State<Helpline> {
                           Padding(
                             padding: const EdgeInsets.only(left: 8,right: 8),
                             child: Container(
-                                height: screenHeight * 0.0505, width: screenWidth * 0.1012,
+                                height: screenHeight * 0.0499, width: screenWidth * 0.1012,
                                 child: Image(image: AssetImage(helpline.imagePath))),
                           ),
                           Column(
@@ -255,12 +258,12 @@ class _HelplineState extends State<Helpline> {
                                 helpline.description,
                                 style: TextStyle(
                                   color: Colors.grey,
-                                  fontSize: screenHeight * 0.015,
+                                  fontSize: screenHeight * 0.014,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(width: screenWidth * 0.05),
+                          SizedBox(width: screenWidth * 0.1),
                           Container(
                               height: screenHeight * 0.0256, width: screenWidth * 0.0256,
                               child: GestureDetector(

@@ -1,8 +1,89 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth package
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// Define a class to handle user authentication
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Sign in anonymously
+  Future<User?> signInAnonymously() async {
+    try {
+      UserCredential result = await _auth.signInAnonymously();
+      User? user = result.user;
+      return user;
+    } catch (e) {
+      print("Error signing in anonymously: $e");
+      return null;
+    }
+  }
+
+  // Get current user
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
+  // Sign out
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+}
+
+// Define a class to manage contacts
+class ContactManager {
+  final CollectionReference contactCollection =
+  FirebaseFirestore.instance.collection('contacts');
+
+  // Add contact to Firestore
+  Future<void> addContact(String displayName) async {
+    try {
+      User? user = AuthService().getCurrentUser();
+      if (user != null) {
+        await contactCollection
+            .doc(user.uid)
+            .collection('selected_contacts')
+            .doc(displayName) // Use displayName as document ID
+            .set({'displayName': displayName});
+      }
+    } catch (e) {
+      print("Error adding contact: $e");
+    }
+  }
+
+  // Remove contact from Firestore
+  Future<void> removeContact(String displayName) async {
+    try {
+      User? user = AuthService().getCurrentUser();
+      if (user != null) {
+        await contactCollection
+            .doc(user.uid)
+            .collection('selected_contacts')
+            .doc(displayName)
+            .delete();
+      }
+    } catch (e) {
+      print("Error removing contact: $e");
+    }
+  }
+
+  // Retrieve user contacts from Firestore
+  Stream<QuerySnapshot> getUserContacts() {
+    User? user = AuthService().getCurrentUser();
+    if (user != null) {
+      return contactCollection
+          .doc(user.uid)
+          .collection('selected_contacts')
+          .snapshots();
+    } else {
+      return Stream.empty();
+    }
+  }
+}
+
+// Define ContactSearch widget
 class ContactSearch extends StatefulWidget {
   @override
   _ContactSearchState createState() => _ContactSearchState();
@@ -18,7 +99,7 @@ class _ContactSearchState extends State<ContactSearch> {
   void initState() {
     super.initState();
     _fetchContacts();
-    _retrieveSelectedContacts();
+    _fetchSelectedContacts(); // Fetch selected contacts from Firestore
   }
 
   Future<void> _fetchContacts() async {
@@ -29,6 +110,26 @@ class _ContactSearchState extends State<ContactSearch> {
     });
   }
 
+  Future<void> _fetchSelectedContacts() async {
+    try {
+      Stream<QuerySnapshot> snapshot = ContactManager().getUserContacts();
+      snapshot.listen((QuerySnapshot querySnapshot) {
+        setState(() {
+          _selectedContacts.clear();
+          querySnapshot.docs.forEach((doc) {
+            String displayName = doc.get('displayName');
+            Contact contact = _contacts.firstWhere(
+                    (element) => element.displayName == displayName,
+                orElse: () => Contact(displayName: displayName));
+            _selectedContacts.add(contact);
+          });
+        });
+      });
+    } catch (e) {
+      print("Error fetching selected contacts: $e");
+    }
+  }
+
   void _filterContacts(String query) {
     setState(() {
       _filteredContacts = _contacts.where((contact) =>
@@ -36,64 +137,11 @@ class _ContactSearchState extends State<ContactSearch> {
     });
   }
 
-  Future<void> _retrieveSelectedContacts() async {
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('selected_contacts').get();
-      List<Contact> selectedContacts = [];
-      querySnapshot.docs.forEach((doc) {
-        String displayName = doc['displayName'];
-        selectedContacts.add(Contact(displayName: displayName));
-      });
-      setState(() {
-        _selectedContacts = selectedContacts;
-      });
-    } catch (e) {
-      print('Error retrieving selected contacts from Firestore: $e');
-    }
-  }
-
   void _addContact(Contact contact) async {
+    ContactManager().addContact(contact.displayName ?? '');
     setState(() {
-      if (!_selectedContacts.contains(contact)) {
-        _selectedContacts.add(contact);
-      }
+      _selectedContacts.add(contact);
     });
-    try {
-      await FirebaseFirestore.instance.collection('selected_contacts').add({
-        'displayName': contact.displayName,
-      });
-    } catch (e) {
-      print('Error adding contact to Firestore: $e');
-    }
-  }
-
-  void _removeContact(Contact contact) async {
-    setState(() {
-      _selectedContacts.remove(contact);
-    });
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('selected_contacts')
-          .where('displayName', isEqualTo: contact.displayName)
-          .get();
-      querySnapshot.docs.forEach((doc) {
-        doc.reference.delete();
-      });
-    } catch (e) {
-      print('Error removing contact from Firestore: $e');
-    }
-  }
-
-  void _viewSelectedContacts() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SelectedContactsPage(
-          selectedContacts: _selectedContacts,
-          onRemoveContact: _removeContact,
-        ),
-      ),
-    );
   }
 
   @override
@@ -105,10 +153,7 @@ class _ContactSearchState extends State<ContactSearch> {
           onChanged: _filterContacts,
           decoration: InputDecoration(
             hintText: 'Search Contacts...',
-            focusColor: Colors.black,
           ),
-          cursorColor: Colors.black,
-          style: TextStyle(color: Colors.black),
         ),
       ),
       body: _filteredContacts != null
@@ -116,7 +161,8 @@ class _ContactSearchState extends State<ContactSearch> {
         itemCount: _filteredContacts.length,
         itemBuilder: (context, index) {
           Contact contact = _filteredContacts.elementAt(index);
-          String firstLetter = contact.displayName != null && contact.displayName!.isNotEmpty
+          String firstLetter = contact.displayName != null &&
+              contact.displayName!.isNotEmpty
               ? contact.displayName![0].toUpperCase()
               : '';
           return ListTile(
@@ -136,8 +182,20 @@ class _ContactSearchState extends State<ContactSearch> {
       ),
       floatingActionButton: _selectedContacts.isNotEmpty
           ? FloatingActionButton.extended(
-        onPressed: _viewSelectedContacts,
-        label: Text('Add SOS Contacts', textAlign: TextAlign.center,),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SelectedContactsPage(
+                selectedContacts: _selectedContacts,
+              ),
+            ),
+          );
+        },
+        label: Text(
+          'Add SOS Contacts',
+          textAlign: TextAlign.center,
+        ),
       )
           : null,
     );
@@ -145,30 +203,16 @@ class _ContactSearchState extends State<ContactSearch> {
 
   Color _generateRandomColor() {
     final random = Random();
-    return Color.fromRGBO(random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
+    return Color.fromRGBO(
+        random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
   }
 }
 
-class SelectedContactsPage extends StatefulWidget {
+// Define SelectedContactsPage widget
+class SelectedContactsPage extends StatelessWidget {
   final List<Contact> selectedContacts;
-  final Function(Contact) onRemoveContact;
 
-  SelectedContactsPage({
-    required this.selectedContacts,
-    required this.onRemoveContact,
-  });
-
-  @override
-  _SelectedContactsPageState createState() => _SelectedContactsPageState();
-}
-
-class _SelectedContactsPageState extends State<SelectedContactsPage> {
-  void _removeContact(Contact contact) {
-    setState(() {
-      widget.selectedContacts.remove(contact);
-    });
-    widget.onRemoveContact(contact);
-  }
+  SelectedContactsPage({required this.selectedContacts});
 
   @override
   Widget build(BuildContext context) {
@@ -177,30 +221,22 @@ class _SelectedContactsPageState extends State<SelectedContactsPage> {
         title: Text('Selected Contacts'),
       ),
       body: ListView.builder(
-        itemCount: widget.selectedContacts.length,
+        itemCount: selectedContacts.length,
         itemBuilder: (context, index) {
-          Contact contact = widget.selectedContacts[index];
-          String firstLetter = contact.displayName != null && contact.displayName!.isNotEmpty
+          Contact contact = selectedContacts[index];
+          String firstLetter = contact.displayName != null &&
+              contact.displayName!.isNotEmpty
               ? contact.displayName![0].toUpperCase()
               : '';
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 7),
-            child: Card(
-              color: Colors.purple.shade50,
-              child:  ListTile(
-                title: Text(contact.displayName ?? ''),
-                leading: CircleAvatar(
-                  backgroundColor: _generateRandomColor(),
-                  child: Text(firstLetter),
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    _removeContact(contact);
-                  },
-                ),
-              ),
+          return ListTile(
+            title: Text(contact.displayName ?? ''),
+            leading: CircleAvatar(
+              backgroundColor: _generateRandomColor(),
+              child: Text(firstLetter),
             ),
+            onTap: () {
+              // Handle onTap
+            },
           );
         },
       ),
@@ -209,6 +245,17 @@ class _SelectedContactsPageState extends State<SelectedContactsPage> {
 
   Color _generateRandomColor() {
     final random = Random();
-    return Color.fromRGBO(random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
+    return Color.fromRGBO(
+        random.nextInt(256), random.nextInt(256), random.nextInt(256), 1);
   }
+}
+
+// Main function
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  AuthService().signInAnonymously();
+  runApp(MaterialApp(
+    home: ContactSearch(),
+  ));
 }
