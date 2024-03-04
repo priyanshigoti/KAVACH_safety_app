@@ -107,25 +107,10 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body:
+      SingleChildScrollView(
         child: Stack(
           children: [
-            // Column(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   mainAxisAlignment: MainAxisAlignment.start,
-            //   children: [
-            //     Padding(
-            //       padding: EdgeInsets.all(15.0),
-            //       child: Text(
-            //         "Feedback",
-            //         style: TextStyle(
-            //           fontSize: 20,
-            //           color: Colors.white,
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
             Container(
               color: Color(0xFF4C2659),
               width: double.infinity,

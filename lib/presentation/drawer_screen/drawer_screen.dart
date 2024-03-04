@@ -369,6 +369,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:kavach_project/presentation/E-learning/desc_eLearning.dart';
+import 'package:kavach_project/presentation/Settings_screen/settings_screen.dart';
 import 'package:kavach_project/presentation/history_page/history_page.dart';
 import 'package:kavach_project/presentation/invite_friend/invite_friend.dart';
 

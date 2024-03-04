@@ -75,22 +75,26 @@ class videoList extends StatelessWidget {
                                                 ytUrl: items[index].videoUrl.toString())));
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
+                                    padding: const EdgeInsets.all(8.0),
                                     child: Card(
-                                      elevation: 3,
+                                      elevation: 5,
                                       child: Row(
                                         children: [
                                           Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Icon(Icons.ondemand_video),
+                                            padding: const EdgeInsets.all(15.0),
+                                            child: Container(
+                                              height: 25,width: 25,
+                                                child: Image(image: AssetImage("assets/youtube.png"))),
                                           ),
                                           Container(
                                             padding: EdgeInsets.all(12),
                                             height: 60,
-                                            child: Text(
-                                              items[index].title.toString(),
-                                              style: TextStyle(
-                                                fontSize: 17,
+                                            child: Center(
+                                              child: Text(
+                                                items[index].title.toString(),
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                ),
                                               ),
                                             ),
                                           ),
