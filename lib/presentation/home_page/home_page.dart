@@ -545,9 +545,7 @@ class _HomePageState extends State<HomePage> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: CupertinoButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-              },
+              onPressed: _getCurrentLocation,
               child: Icon(CupertinoIcons.location_solid, color: Color(0xFF4C2559)),
             ),
             label: 'Track me',
