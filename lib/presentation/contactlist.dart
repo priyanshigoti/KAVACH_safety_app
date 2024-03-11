@@ -365,14 +365,12 @@
 // //   ));
 // // }
 //
-//
-//
-//
 // import 'dart:math';
 // import 'package:contacts_service/contacts_service.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/material.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:uuid/uuid.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 //
 // class AuthService {
@@ -407,16 +405,17 @@
 //     try {
 //       DocumentReference docRef = contactCollection.doc(userId);
 //       DocumentSnapshot doc = await docRef.get();
+//       String token = Uuid().v4(); // Generate a unique token for the contact
 //       if (doc.exists) {
 //         await docRef.update({
 //           'contacts': FieldValue.arrayUnion([
-//             {'displayName': displayName, 'phoneNumber': phoneNumber}
+//             {'token': token, 'displayName': displayName, 'phoneNumber': phoneNumber}
 //           ])
 //         });
 //       } else {
 //         await docRef.set({
 //           'contacts': [
-//             {'displayName': displayName, 'phoneNumber': phoneNumber}
+//             {'token': token, 'displayName': displayName, 'phoneNumber': phoneNumber}
 //           ]
 //         });
 //       }
@@ -425,14 +424,14 @@
 //     }
 //   }
 //
-//   Future<void> removeContact(String userId, String displayName) async {
+//   Future<void> removeContact(String userId, String token) async {
 //     try {
 //       DocumentReference docRef = contactCollection.doc(userId);
 //       DocumentSnapshot doc = await docRef.get();
 //       if (doc.exists) {
 //         List<dynamic> contacts = doc['contacts'];
 //         contacts.removeWhere((contactData) =>
-//         contactData['displayName'] == displayName);
+//         contactData['token'] == token); // Remove contact by token
 //         await docRef.update({'contacts': contacts});
 //       }
 //     } catch (e) {
@@ -733,16 +732,15 @@
 //     home: ContactSearch(),
 //   ));
 // }
-
+//
+//
 
 import 'dart:math';
-
 import 'package:contacts_service/contacts_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -772,28 +770,20 @@ class ContactManager {
   FirebaseFirestore.instance.collection('contacts');
 
   Future<void> addContact(
-      String userId, String displayName, String phoneNumber, String token) async {
+      String userId, String displayName, String phoneNumber) async {
     try {
       DocumentReference docRef = contactCollection.doc(userId);
       DocumentSnapshot doc = await docRef.get();
       if (doc.exists) {
         await docRef.update({
           'contacts': FieldValue.arrayUnion([
-            {
-              'displayName': displayName,
-              'phoneNumber': phoneNumber,
-              'token': token
-            }
+            {'displayName': displayName, 'phoneNumber': phoneNumber}
           ])
         });
       } else {
         await docRef.set({
           'contacts': [
-            {
-              'displayName': displayName,
-              'phoneNumber': phoneNumber,
-              'token': token
-            }
+            {'displayName': displayName, 'phoneNumber': phoneNumber}
           ]
         });
       }
@@ -808,8 +798,8 @@ class ContactManager {
       DocumentSnapshot doc = await docRef.get();
       if (doc.exists) {
         List<dynamic> contacts = doc['contacts'];
-        contacts.removeWhere(
-                (contactData) => contactData['displayName'] == displayName);
+        contacts.removeWhere((contactData) =>
+        contactData['displayName'] == displayName);
         await docRef.update({'contacts': contacts});
       }
     } catch (e) {
@@ -833,7 +823,6 @@ class _ContactSearchState extends State<ContactSearch> {
   TextEditingController _searchController = TextEditingController();
   List<Contact> _selectedContacts = [];
   final ContactManager _contactManager = ContactManager();
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   @override
   void initState() {
@@ -853,8 +842,7 @@ class _ContactSearchState extends State<ContactSearch> {
   Future<void> _fetchSelectedContacts() async {
     String userId = AuthService().getCurrentUser()?.uid ?? '';
     if (userId.isNotEmpty) {
-      Stream<DocumentSnapshot> snapshot =
-      _contactManager.getUserContacts(userId);
+      Stream<DocumentSnapshot> snapshot = _contactManager.getUserContacts(userId);
       snapshot.listen((DocumentSnapshot document) {
         setState(() {
           _selectedContacts.clear();
@@ -863,7 +851,6 @@ class _ContactSearchState extends State<ContactSearch> {
             contacts.forEach((contactData) {
               String displayName = contactData['displayName'];
               String phoneNumber = contactData['phoneNumber'];
-              String token = contactData['token'];
               Contact contact = Contact(
                 displayName: displayName,
                 phones: [Item(label: 'mobile', value: phoneNumber)],
@@ -886,63 +873,39 @@ class _ContactSearchState extends State<ContactSearch> {
   }
 
   Future<void> _showAddContactDialog(Contact contact) async {
-    String? token = await _getFirebaseCloudMessagingToken();
-    if (token != null) {
-      return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Add Contact'),
-            content: Text('Do you want to add ${contact.displayName}?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close dialog
-                },
-                child: Text('No'),
-              ),
-              TextButton(
-                onPressed: () {
-                  _addContact(contact, token);
-                  Navigator.of(context).pop(); // Close dialog
-                },
-                child: Text('Yes'),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      // Handle case where token is null
-      print('Token is null.');
-    }
-  }
-
-  Future<String?> _getFirebaseCloudMessagingToken() async {
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Add Contact'),
+          content: Text('Do you want to add ${contact.displayName}?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                _addContact(contact);
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
     );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
-        settings.authorizationStatus == AuthorizationStatus.provisional) {
-      String? token = await _firebaseMessaging.getToken();
-      return token;
-    } else {
-      // Permission denied, handle accordingly
-      return null;
-    }
   }
 
-  void _addContact(Contact contact, String token) async {
+  void _addContact(Contact contact) async {
     String userId = AuthService().getCurrentUser()?.uid ?? '';
     if (userId.isNotEmpty) {
       _contactManager.addContact(
         userId,
         contact.displayName ?? '',
         contact.phones?.first.value ?? '',
-        token,
       );
       setState(() {
         _selectedContacts.add(contact);

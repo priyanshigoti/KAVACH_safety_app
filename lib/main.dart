@@ -57,6 +57,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kavach_project/presentation/Emergency_helplinecall_screen/provider/Emergency_helplinecall_screen_provider.dart';
 import 'package:kavach_project/presentation/Feedback_screen/provider/Feedback_screen_provider.dart';
@@ -75,6 +76,7 @@ import 'package:kavach_project/presentation/password_screen/provider/password_pr
 import 'package:kavach_project/presentation/profile_screen/provider/profile_provider.dart';
 import 'package:kavach_project/presentation/sign_up_login_screen/provider/sign_up_login_provider.dart';
 import 'package:kavach_project/presentation/splash_screen/provider/splash_provider.dart';
+import 'package:kavach_project/pushNotificaionServices.dart';
 import 'package:kavach_project/routes/app_routes.dart';
 import 'package:kavach_project/theme/theme_helper.dart';
 import 'core/app_export.dart';
@@ -92,6 +94,7 @@ import 'localization/app_localization.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 

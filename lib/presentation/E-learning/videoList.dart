@@ -33,7 +33,7 @@ class videoList extends StatelessWidget {
               child: Text(
                 'Chapters of E-Learning',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -74,26 +74,26 @@ class videoList extends StatelessWidget {
                                             builder: (builder) => YT_Player(
                                                 ytUrl: items[index].videoUrl.toString())));
                                   },
-                                  child: Padding(
+                                  child:Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Card(
                                       elevation: 5,
                                       child: Row(
                                         children: [
                                           Padding(
-                                            padding: const EdgeInsets.all(15.0),
+                                            padding: const EdgeInsets.all(13.0),
                                             child: Container(
-                                              height: 25,width: 25,
+                                              height: 24,width: 24,
                                                 child: Image(image: AssetImage("assets/youtube.png"))),
                                           ),
                                           Container(
-                                            padding: EdgeInsets.all(12),
+                                            padding: EdgeInsets.all(7),
                                             height: 60,
                                             child: Center(
                                               child: Text(
                                                 items[index].title.toString(),
                                                 style: TextStyle(
-                                                  fontSize: 17,
+                                                  fontSize: 15,
                                                 ),
                                               ),
                                             ),
