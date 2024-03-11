@@ -56,8 +56,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kavach_project/presentation/Emergency_helplinecall_screen/provider/Emergency_helplinecall_screen_provider.dart';
 import 'package:kavach_project/presentation/Feedback_screen/provider/Feedback_screen_provider.dart';
@@ -68,7 +66,6 @@ import 'package:kavach_project/presentation/Sign_up_screen/provider/Sign_up_prov
 import 'package:kavach_project/presentation/drawer_screen/provider/drawer_provider.dart';
 import 'package:kavach_project/presentation/forget_pass_screen/provider/forget_pass_provider.dart';
 import 'package:kavach_project/presentation/history_three_page/provider/history_three_provider.dart';
-import 'package:kavach_project/presentation/history_three_tab_container_screen/provider/history_three_tab_container_provider.dart';
 import 'package:kavach_project/presentation/history_two_screen/provider/history_two_provider.dart';
 import 'package:kavach_project/presentation/home_page/provider/home_provider.dart';
 import 'package:kavach_project/presentation/invite_friend/provider/invite_friend_provider.dart';
@@ -76,17 +73,13 @@ import 'package:kavach_project/presentation/password_screen/provider/password_pr
 import 'package:kavach_project/presentation/profile_screen/provider/profile_provider.dart';
 import 'package:kavach_project/presentation/sign_up_login_screen/provider/sign_up_login_provider.dart';
 import 'package:kavach_project/presentation/splash_screen/provider/splash_provider.dart';
-import 'package:kavach_project/pushNotificaionServices.dart';
 import 'package:kavach_project/routes/app_routes.dart';
 import 'package:kavach_project/theme/theme_helper.dart';
 import 'core/app_export.dart';
 import 'core/utils/navigator_service.dart';
-import 'core/utils/pref_utils.dart';
 import 'core/utils/size_utils.dart';
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-
 import 'localization/app_localization.dart';
 
 
@@ -122,7 +115,6 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (context) => ProfileProvider()),
             ChangeNotifierProvider(create: (context) => HistoryThreeProvider()),
             ChangeNotifierProvider(create: (context) => HistoryTwoProvider()),
-            ChangeNotifierProvider(create: (context) => HistoryThreeTabContainerProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
