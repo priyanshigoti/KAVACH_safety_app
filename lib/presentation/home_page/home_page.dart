@@ -436,6 +436,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:direct_sms/direct_sms.dart';
+import 'package:kavach_project/presentation/Voice_detection/voice_detection.dart';
 
 import '../National_helpline_screen/National_helpline_screen.dart';
 import '../contactlist.dart';
@@ -731,18 +732,18 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: CupertinoButton(
               onPressed: _getCurrentLocation,
-              child: Icon(CupertinoIcons.location_solid, color: Color(0xFF4C2559)),
+              child: Icon(Icons.location_on_outlined, color: Color(0xFF4C2559)),
             ),
             label: 'Track me',
           ),
           BottomNavigationBarItem(
             icon: CupertinoButton(
               onPressed: () {
-                //  Navigator.push(context, MaterialPageRoute(builder: (context)=>HelplinePage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>SOSPage()));
               },
-              child: Icon(CupertinoIcons.volume_up, color: Color(0xFF4C2559)),
+              child: Icon(CupertinoIcons.mic, color: Color(0xFF4C2559)),
             ),
-            label: 'Recordings',
+            label: 'Voice',
           ),
           BottomNavigationBarItem(
             icon: GestureDetector(
@@ -769,7 +770,7 @@ class _HomePageState extends State<HomePage> {
               },
               child: Icon(CupertinoIcons.phone_badge_plus, color: Color(0xFF4C2559)),
             ),
-            label: 'Helplines',
+            label: 'Helpline',
           ),
           BottomNavigationBarItem(
             icon: CupertinoButton(
