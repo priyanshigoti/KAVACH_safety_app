@@ -4,6 +4,7 @@ import 'package:kavach_project/presentation/National_helpline_screen/provider/Na
 import 'package:provider/provider.dart';
 
 import '../Emergency_helplinecall_screen/Emergency_helplinecall_screen.dart';
+import '../Helpline_screen/helpline_screen.dart';
 import '../Newpassword_screen/Newpassword_screen.dart';
 import '../drawer_screen/drawer_screen.dart';
 import '../home_page/home_page.dart';
@@ -204,7 +205,7 @@ class _HelplineState extends State<Helpline> {
                   // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: helplines.map((helpline) => GestureDetector(
                     onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>EmergencyHelplineScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>HelplineList()));
                     },
                     child: Container(
                       margin: EdgeInsets.only(left: screenWidth * 0.0452, right: screenWidth * 0.0452, top: screenHeight * 0.1929),

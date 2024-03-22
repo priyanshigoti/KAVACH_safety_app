@@ -88,7 +88,7 @@ class videoList extends StatelessWidget {
                                   ),
                                   child: ListTile(
                                     leading: CircleAvatar(
-                                      backgroundImage: AssetImage('assets/images/protection.png'), // Provide the path to your image
+                                      backgroundImage: AssetImage('assets/images/activist.png'), // Provide the path to your image
                                     ),
                                     title: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
