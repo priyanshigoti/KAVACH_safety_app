@@ -50,53 +50,64 @@ class _RegisterScreenState extends State<RegisterScreen> {
   FirebaseAuth _auth=FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  // Future<void> _signInWithGoogle() async {
-  //   try {
-  //     // Trigger the Google Sign-In flow
-  //     final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+
+  // void _addUserToAdminPage() async {
+  //   String email = _emailController.text;
+  //   String phone = _phoneController.text;
+  //   String username = _usernameController.text;
   //
-  //     if (googleSignInAccount != null) {
-  //       // Obtain the GoogleSignInAuthentication object
-  //       final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
   //
-  //       // Create a new credential
-  //       final AuthCredential credential = GoogleAuthProvider.credential(
-  //         accessToken: googleSignInAuthentication.accessToken,
-  //         idToken: googleSignInAuthentication.idToken,
-  //       );
+  //   if (email.isNotEmpty && phone.isNotEmpty && username.isNotEmpty ) {
+  //     await _firestore.collection('user_list').add({
+  //       'email': _emailController.text.trim(),
+  //       'phone': _phoneController.text.trim(),
+  //       'firstname':_usernameController.text.trim(),
   //
-  //       // Sign in to Firebase with the Google credential
-  //       final UserCredential userCredential = await _auth.signInWithCredential(credential);
-  //
-  //       // Get the user information
-  //       final User? user = userCredential.user;
-  //
-  //       if (user != null) {
-  //         // Navigate to your desired screen after successful login
-  //         Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
-  //       }
-  //     }
-  //   } catch (error) {
-  //     print('Error signing in with Google: $error');
-  //     // Handle sign-in errors here
+  //     });
+  //     print('Added Successfully');
   //   }
   // }
 
-// Method to save user data to Firestore during registration
-  void _addUserToAdminPage() async {
-    String email = _emailController.text;
-    String phone = _phoneController.text;
-    String username = _usernameController.text;
+
+  void _registerUser() async {
+    //  final SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      final UserCredential userCredential =
+      await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (userCredential.user != null) {
+        CollectionReference users = FirebaseFirestore.instance.collection('user_list');
+
+        await users.doc(userCredential.user!.uid).set({
+          'email': _emailController.text.trim(),
+          'phone': _phoneController.text.trim(),
+          'firstname':_usernameController.text.trim(),
+
+        });
+        // await prefs.setBool('isLogin', true);
+        print("Added Successfully in database");
 
 
-    if (email.isNotEmpty && phone.isNotEmpty && username.isNotEmpty ) {
-      await _firestore.collection('user_list').add({
-        'email': _emailController.text.trim(),
-        'phone': _phoneController.text.trim(),
-        'firstname':_usernameController.text.trim(),
-
-      });
-      print('Added Successfully');
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(e.toString()),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -411,102 +422,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
 
-                  // Add other form fields with similar modifications
-                  // Padding(
-                  //   padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.021, left: MediaQuery.of(context).size.width * 0.06, right: MediaQuery.of(context).size.width * 0.06),
-                  //   child: Padding(
-                  //     padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.045),
-                  //     child:
-                  //     Row(
-                  //       children: [
-                  //         Text(
-                  //           'Gender:',
-                  //           style: TextStyle(),
-                  //         ),
-                  //         SizedBox(width: 10),
-                  //         // Row(
-                  //         //   children: [
-                  //         //     Radio<String>(
-                  //         //       value: 'Male',
-                  //         //       groupValue: selectedGender,
-                  //         //       onChanged: (value) {
-                  //         //         setState(() {
-                  //         //           selectedGender = value;
-                  //         //         });
-                  //         //       },
-                  //         //     ),
-                  //         //     Text('Male'),
-                  //         //     Radio<String>(
-                  //         //       value: 'Female',
-                  //         //       groupValue: selectedGender,
-                  //         //       onChanged: (value) {
-                  //         //         setState(() {
-                  //         //           selectedGender = value;
-                  //         //         });
-                  //         //       },
-                  //         //     ),
-                  //         //     Text('Female'),
-                  //         //   ],
-                  //         // ),
-                  //       ],
-                  //     )
-                  //
-                  //   ),
-                  // ),
-
-                  //                 Padding(
-                  //                   padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.030, left: MediaQuery.of(context).size.width * 0.06, right: MediaQuery.of(context).size.width * 0.06),
-                  //                   child:
-                  //                   ElevatedButton(
-                  //                     onPressed: () {
-                  //
-                  //
-                  // // if(_usernameController.text.trim().isEmpty||_usernameController.text.trim()==null){
-                  // // Fluttertoast.showToast(msg:"please enter details");
-                  // // return;
-                  // // }
-                  // // if(_emailController.text.trim().isEmpty||_emailController.text.trim()==null){
-                  // // Fluttertoast.showToast(msg:"please enter email");
-                  // // return;
-                  // // }
-                  // // if(_passwordController.text.trim().isEmpty||_passwordController.text.trim()==null){
-                  // // Fluttertoast.showToast(msg:"please enter password");
-                  // // return;
-                  // // }
-                  // // if(_phoneController.text.trim().isEmpty||_phoneController.text.trim()==null){
-                  // // Fluttertoast.showToast(msg:"please enter phone number");
-                  // // return;
-                  // // }
-                  //                       if(_formkey.currentState!.validate()){
-                  //                         _auth.createUserWithEmailAndPassword(
-                  //                             email: _emailController.text.toString(), password: _passwordController.text.toString(),
-                  //                         );
-                  //                       }
-                  //                       Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-                  //                     },
-                  //                     style: ElevatedButton.styleFrom(
-                  //                       backgroundColor: Color(0xFF4C2559),
-                  //                       shape: RoundedRectangleBorder(
-                  //                         borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
-                  //                       ),
-                  //                       minimumSize: Size(
-                  //                         MediaQuery.of(context).size.width * 0.90,
-                  //                         MediaQuery.of(context).size.height * 0.06,
-                  //                       ),
-                  //                     ),
-                  //                     child: Text(
-                  //                       "SIGN UP",
-                  //                       style: TextStyle(
-                  //                         color: Colors.white,
-                  //                         fontSize: 13,
-                  //                       ),
-                  //                     ),
-                  //                   ),
                   Padding(
                     padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.030, left: MediaQuery.of(context).size.width * 0.06, right: MediaQuery.of(context).size.width * 0.06),
                     child: ElevatedButton(
                       onPressed: () {
-                        _addUserToAdminPage();
+                        _registerUser();
+                        //_addUserToAdminPage();
                         if (_formkey.currentState!.validate()) {
                           // Form is valid, proceed with registration
                           _auth.createUserWithEmailAndPassword(

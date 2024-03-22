@@ -135,20 +135,7 @@ class _HelplineState extends State<Helpline> {
                             ),
                           ),
                         ),
-                        // Positioned(
-                        //   left: screenWidth * 0.7908,
-                        //   top: screenHeight * 0.051,
-                        //   child: GestureDetector(
-                        //     onTap: (){
-                        //       //    Navigator.push(context, MaterialPageRoute(builder: (context)=>Drawerscreen()));
-                        //     },
-                        //     child: Container(
-                        //       width: screenWidth * 0.0357,
-                        //       height: screenHeight * 0.0197,
-                        //       child: Icon(Icons.notifications_active_outlined, color: Color(0xFF4C2559),size: 28,),
-                        //     ),
-                        //   ),
-                        // ),
+
                       ],
                     ),
                   ),
@@ -281,67 +268,6 @@ class _HelplineState extends State<Helpline> {
           ),
 
         ],
-      ),
-
-
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: CupertinoButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
-              },
-              child: Icon(CupertinoIcons.location_solid,color: Color(0xFF4C2559),),
-            ),
-            label: 'Track me',
-          ),
-          BottomNavigationBarItem(
-            icon: CupertinoButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>NewPassword()));
-              },
-              child: Icon(CupertinoIcons.volume_up,color: Color(0xFF4C2559)),
-            ),
-            label: 'Recordings',
-          ),
-          BottomNavigationBarItem(
-            icon: Container(
-              width: screenWidth * 0.1147,
-              height: screenHeight * 0.0657,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.red, // Change color as needed
-              ),
-              child: Image(image: AssetImage("assets/sos_4617104.png")),
-            ),
-            label: 'SOS',
-          ),
-          BottomNavigationBarItem(
-            icon: CupertinoButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>EmergencyHelplineScreen()));
-              },
-              child: Icon(CupertinoIcons.phone_badge_plus,color: Color(0xFF4C2559)),
-            ),
-            //Icon(Icons.contact_phone, size: screenWidth * 0.0689, color: Color(0xFF4C2559)),
-            label: 'Helplines',
-          ),
-          BottomNavigationBarItem(
-            icon: CupertinoButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen()));
-              },
-              child: Icon(CupertinoIcons.person,color: Color(0xFF4C2559)),
-            ),
-            //Icon(Icons.person, size: screenWidth * 0.0689, color: Color(0xFF4C2559)),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF4C2559),
-        unselectedLabelStyle: TextStyle(color: Color(0xFF4C2559)),
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }

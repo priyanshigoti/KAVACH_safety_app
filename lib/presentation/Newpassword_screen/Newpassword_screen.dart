@@ -188,26 +188,6 @@ class NewPassword extends StatelessWidget {
                     ],
                   ),
                 ),
-                // TextField(
-                //   controller: _newPasswordController,
-                //   onChanged: (value) {
-                //     provider?.updateNewPassword(value);
-                //   },
-                //   decoration: InputDecoration(labelText: 'New Password'),
-                // ),
-                // TextField(
-                //   controller: _confirmPasswordController,
-                //   onChanged: (value) {
-                //     provider.updateConfirmPassword(value);
-                //   },
-                //   decoration: InputDecoration(labelText: 'Confirm Password'),
-                // ),
-                // ElevatedButton(
-                //   onPressed: () {
-                //     // Perform submit action
-                //   },
-                //   child: Text('Submit'),
-                // ),
               ],
             ),
           );

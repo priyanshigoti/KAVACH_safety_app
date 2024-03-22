@@ -346,7 +346,8 @@ class _Legal_screenState extends State<Legal_screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body:
+      SingleChildScrollView(
         child: Stack(
           children: [
             Container(
@@ -382,7 +383,8 @@ class _Legal_screenState extends State<Legal_screen> {
                   ),
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.88 - 50,
-                  child: Column(
+                  child:
+                  Column(
                     children: [
                       Padding(
                         padding: EdgeInsets.only(

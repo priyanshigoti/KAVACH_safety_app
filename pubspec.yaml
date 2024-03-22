@@ -60,6 +60,7 @@ dependencies:
   pin_code_text_field: ^1.8.0
   flutter_localization: ^0.2.0
   geolocator: ^8.0.4
+  geocoding: ^2.2.1
   flutter_datetime_picker: ^1.5.1
   google_maps_flutter_android: ^2.1.10
   onesignal_flutter: ^5.1.2
@@ -71,6 +72,11 @@ dependencies:
   speech_to_text: ^6.1.0
   uuid: ^3.0.5
   direct_sms: ^0.0.1
+  flutter_background_service: ^5.0.5
+  shake: ^2.2.0
+  flutter_background: ^1.0.6
+  audioplayers: ^5.2.1
+  flutter_sound: ^8.0.0+2
 
 
   # The following adds the Cupertino Icons font to your application.

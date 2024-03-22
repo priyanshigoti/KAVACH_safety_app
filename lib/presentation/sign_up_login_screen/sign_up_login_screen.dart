@@ -225,7 +225,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            email_recovery()));
+                                            EmailRecovery()));
                               },
                               child: Text(
                                 "Forget Password?",

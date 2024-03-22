@@ -114,7 +114,7 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
             Container(
               color: Color(0xFF4C2659),
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.9,
+              height: MediaQuery.of(context).size.height,
             ),
             Positioned(
               top: MediaQuery.of(context).size.height * 0.05, // Adjust position as needed
@@ -157,7 +157,7 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
                     ),
                   ),
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.88 - 50,
+                  height: MediaQuery.of(context).size.height,
                   child: Column(
                     children: [
                       Padding(

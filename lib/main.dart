@@ -65,8 +65,6 @@ import 'package:kavach_project/presentation/Settings_screen/provider/settings_sc
 import 'package:kavach_project/presentation/Sign_up_screen/provider/Sign_up_provider.dart';
 import 'package:kavach_project/presentation/drawer_screen/provider/drawer_provider.dart';
 import 'package:kavach_project/presentation/forget_pass_screen/provider/forget_pass_provider.dart';
-import 'package:kavach_project/presentation/history_three_page/provider/history_three_provider.dart';
-import 'package:kavach_project/presentation/history_two_screen/provider/history_two_provider.dart';
 import 'package:kavach_project/presentation/home_page/provider/home_provider.dart';
 import 'package:kavach_project/presentation/invite_friend/provider/invite_friend_provider.dart';
 import 'package:kavach_project/presentation/password_screen/provider/password_provider.dart';
@@ -113,8 +111,6 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (context) => HomeProvider()),
             ChangeNotifierProvider(create: (context) => DrawerProvider()),
             ChangeNotifierProvider(create: (context) => ProfileProvider()),
-            ChangeNotifierProvider(create: (context) => HistoryThreeProvider()),
-            ChangeNotifierProvider(create: (context) => HistoryTwoProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {

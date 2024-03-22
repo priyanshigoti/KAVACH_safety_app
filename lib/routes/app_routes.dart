@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
-import '../presentation/history_two_screen/history_two_screen.dart';
 import '../presentation/password_screen/password_screen.dart';
 import '../presentation/profile_screen/profile_screen.dart';
 import '../presentation/sign_up_login_screen/sign_up_login_screen.dart';
@@ -45,8 +44,7 @@ class AppRoutes {
         passwordScreen: PasswordScreen.builder,
         //forgetPassScreen: ForgetPass.builder,
      //   drawerScreen: DrawerScreen.builder,
-        profileScreen: ProfileScreen.builder,
-        historyTwoScreen: HistoryTwoScreen.builder,
+       // profileScreen: ProfileScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,
         initialRoute: SplashScreen.builder
       };

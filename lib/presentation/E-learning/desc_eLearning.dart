@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kavach_project/presentation/E-learning/videoList.dart';
 
+import '../Women_articals/women_artical.dart';
+
 class desc_eLearning extends StatefulWidget {
   const desc_eLearning({super.key});
 
@@ -113,28 +115,54 @@ class _desc_eLearningState extends State<desc_eLearning> {
                       SizedBox(
                         height: MediaQuery.of(context).size.height * 0.07,
                       ),
-                      Center(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF4C2559),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF4C2559),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
+                              ),
+                              minimumSize: Size(
+                                MediaQuery.of(context).size.width * 0.40,
+                                MediaQuery.of(context).size.height * 0.06,
+                              ),
                             ),
-                            minimumSize: Size(
-                              MediaQuery.of(context).size.width * 0.60,
-                              MediaQuery.of(context).size.height * 0.06,
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (Builder) => videoList()));
+                            },
+                            child: Text(
+                              "See chapters",
+                              style: TextStyle(
+                                fontSize: MediaQuery.of(context).size.width * 0.04,
+                              ),
                             ),
                           ),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (Builder) => videoList()));
-                          },
-                          child: Text(
-                            "See chapters",
-                            style: TextStyle(
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF4C2559),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
+                              ),
+                              minimumSize: Size(
+                                MediaQuery.of(context).size.width * 0.40,
+                                MediaQuery.of(context).size.height * 0.06,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ArticleChaptersScreen()),
+                              );
+                            },
+                            child: Text('Article',style: TextStyle(
                               fontSize: MediaQuery.of(context).size.width * 0.04,
-                            ),
+                            ),),
                           ),
-                        ),
+
+                        ],
+
                       )
                     ],
                   ),

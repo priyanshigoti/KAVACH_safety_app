@@ -370,12 +370,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:kavach_project/presentation/E-learning/desc_eLearning.dart';
 import 'package:kavach_project/presentation/Settings_screen/settings_screen.dart';
+import 'package:kavach_project/presentation/contactlist.dart';
 import 'package:kavach_project/presentation/history_page/history_page.dart';
 import 'package:kavach_project/presentation/invite_friend/invite_friend.dart';
 
 import '../Feedback_screen/Feedback_screen.dart';
-import '../history_two_screen/history_two_screen.dart';
-import '../language.dart';
+import '../home_page/home_page.dart';
 import '../Legal_screen/legal.dart';
 import '../sign_up_login_screen/sign_up_login_screen.dart';
 
@@ -478,7 +478,7 @@ class _DrawerscreenState extends State<Drawerscreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => Addfriend()));
                         }),
                         buildMenuContainer("assets/to-do-list.png", "Blocklist", context, () {
-                       //   Navigator.push(context, MaterialPageRoute(builder: (context) => Addfriend()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ContactSearch()));
                         }),
                       ],
                     ),
