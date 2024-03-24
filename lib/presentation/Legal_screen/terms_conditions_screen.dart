@@ -85,7 +85,7 @@ class _Terms_conditionsState extends State<Terms_conditions> {
                       ),
                     ),
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
+                    height: MediaQuery.of(context).size.height * 0.90,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: SingleChildScrollView(
@@ -129,7 +129,7 @@ class _Terms_conditionsState extends State<Terms_conditions> {
                                 _toggleTerms(true);
                               },
                             ),
-                            SizedBox(height: 15),
+                            SizedBox(height: 13),
                             Center(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(

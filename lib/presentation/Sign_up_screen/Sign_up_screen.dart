@@ -1,5 +1,4 @@
 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -51,22 +50,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  // void _addUserToAdminPage() async {
-  //   String email = _emailController.text;
-  //   String phone = _phoneController.text;
-  //   String username = _usernameController.text;
-  //
-  //
-  //   if (email.isNotEmpty && phone.isNotEmpty && username.isNotEmpty ) {
-  //     await _firestore.collection('user_list').add({
-  //       'email': _emailController.text.trim(),
-  //       'phone': _phoneController.text.trim(),
-  //       'firstname':_usernameController.text.trim(),
-  //
-  //     });
-  //     print('Added Successfully');
-  //   }
-  // }
+  void _addUserToAdminPage() async {
+    String email = _emailController.text;
+    String phone = _phoneController.text;
+    String username = _usernameController.text;
+
+
+    if (email.isNotEmpty && phone.isNotEmpty && username.isNotEmpty ) {
+      await _firestore.collection('all_user').add({
+        'email': _emailController.text.trim(),
+        'phone': _phoneController.text.trim(),
+        'firstname':_usernameController.text.trim(),
+
+      });
+      print('Added Successfully');
+    }
+  }
 
 
   void _registerUser() async {
@@ -165,72 +164,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
   }
-  // Future<void> _signInWithGoogle() async {
-  //   try {
-  //     // Trigger the Google Sign-In flow
-  //     final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
-  //
-  //     if (googleSignInAccount != null) {
-  //       // Obtain the GoogleSignInAuthentication object
-  //       final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-  //
-  //       // Create a new credential
-  //       final AuthCredential credential = GoogleAuthProvider.credential(
-  //         accessToken: googleSignInAuthentication.accessToken,
-  //         idToken: googleSignInAuthentication.idToken,
-  //       );
-  //
-  //       // Sign in to Firebase with the Google credential
-  //       final UserCredential userCredential = await _auth.signInWithCredential(credential);
-  //
-  //       // Get the user information
-  //       final User? user = userCredential.user;
-  //
-  //       if (user != null) {
-  //         // Navigate to your desired screen after successful login
-  //         Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
-  //       }
-  //     }
-  //   } catch (error) {
-  //     print('Error signing in with Google: $error');
-  //     // Handle sign-in errors here
-  //   }
-  // }
-  //
-  // Future<void> _signInWithGoogle() async {
-  //   if (_formkey.currentState!.validate()) {
-  //     try {
-  //       // Trigger the Google Sign-In flow
-  //       final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
-  //
-  //       if (googleSignInAccount != null) {
-  //         // Obtain the GoogleSignInAuthentication object
-  //         final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-  //
-  //         // Create a new credential
-  //         final AuthCredential credential = GoogleAuthProvider.credential(
-  //           accessToken: googleSignInAuthentication.accessToken,
-  //           idToken: googleSignInAuthentication.idToken,
-  //         );
-  //
-  //         // Sign in to Firebase with the Google credential
-  //         final UserCredential userCredential = await _auth.signInWithCredential(credential);
-  //
-  //         // Get the user information
-  //         final User? user = userCredential.user;
-  //
-  //         if (user != null) {
-  //           // Navigate to the home page after successful login
-  //           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
-  //         }
-  //       }
-  //     } catch (error) {
-  //       print('Error signing in with Google: $error');
-  //       // Handle sign-in errors here
-  //     }
-  //   }
-  // }
-  //
+
 
   @override
   Widget build(BuildContext context) {
@@ -427,7 +361,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         _registerUser();
-                        //_addUserToAdminPage();
+                        _addUserToAdminPage();
                         if (_formkey.currentState!.validate()) {
                           // Form is valid, proceed with registration
                           _auth.createUserWithEmailAndPassword(

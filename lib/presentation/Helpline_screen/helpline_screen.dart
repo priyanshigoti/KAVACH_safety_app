@@ -19,7 +19,7 @@ class HelplineList extends StatelessWidget {
               left: 15,
               right: 0,
               child: Text(
-                'Helplines',
+                'Emergency Helplines',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -40,7 +40,7 @@ class HelplineList extends StatelessWidget {
                     ),
                   ),
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.88,
+                  height: MediaQuery.of(context).size.height * 0.89,
                   child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance.collection('helplines').snapshots(),
                     builder: (context, snapshot) {
@@ -74,7 +74,7 @@ class HelplineList extends StatelessWidget {
                                   trailing: IconButton(
                                     icon: Icon(Icons.phone),
                                     onPressed: () {
-                                      _makePhoneCall(helpline['number']); // Assuming 'number' field exists in Firestore document
+                                      _makePhoneCall(helpline['title']); // Assuming 'number' field exists in Firestore document
                                     },
                                   ),
                                 ),
