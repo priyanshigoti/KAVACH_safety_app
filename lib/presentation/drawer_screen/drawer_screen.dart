@@ -369,6 +369,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:kavach_project/presentation/E-learning/desc_eLearning.dart';
+import 'package:kavach_project/presentation/Help_screen/help_screen.dart';
 import 'package:kavach_project/presentation/Legal_screen/about_us_discription.dart';
 import 'package:kavach_project/presentation/Legal_screen/terms_conditions_screen.dart';
 import 'package:kavach_project/presentation/Settings_screen/settings_screen.dart';
@@ -482,7 +483,7 @@ class _DrawerscreenState extends State<Drawerscreen> {
                         // }),
                         buildMenuContainer("assets/help.png", "Help", context, () {
                           //logoutConfirmation(context);
-                             Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpLoginScreen()));
+                             Navigator.push(context, MaterialPageRoute(builder: (context) => Help_screen()));
                         }),
                       ],
                     ),

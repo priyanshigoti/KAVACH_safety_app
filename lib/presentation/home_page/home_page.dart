@@ -552,7 +552,7 @@ class _HomePageState extends State<HomePage> {
               //   }
               // },
               onPressed: (){
-                //Navigator.push(context, MaterialPageRoute(builder: (context)=>ThemeSwitcherPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ThemeSwitcherPage()));
               },
               child: Icon(CupertinoIcons.person, color: Color(0xFF4C2559)),
             ),
