@@ -1,4 +1,4 @@
-//
+
 // import 'dart:io';
 // import 'package:contacts_service/contacts_service.dart';
 // import 'package:flutter/cupertino.dart';
@@ -537,9 +537,9 @@
 //
 //
 // }
-//
-//
-//
+
+
+
 
 
 import 'dart:io';
@@ -594,7 +594,31 @@ class _FakeCallDetailsState extends State<FakeCallDetails> {
 
 
   Future<void> openContactBook() async {
+    // Show loader
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing the dialog
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text('Loading contacts...'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
     Iterable<Contact> contacts = await ContactsService.getContacts();
+    // Dismiss the loader dialog
+    Navigator.of(context).pop();
+
     // Use the contacts list as per your requirement, e.g., display in a dialog
     showDialog(
       context: context,
@@ -613,9 +637,8 @@ class _FakeCallDetailsState extends State<FakeCallDetails> {
                   subtitle: Text(contact.phones?.isNotEmpty == true ? contact.phones!.first.value ?? '' : ''),
                   onTap: () {
                     // When a contact is tapped, update the text fields
-                    _nameController.text = contact.displayName ?? '';
-                    _numberController.text = contact.phones?.isNotEmpty == true ? contact.phones!.first.value ?? '' : '';
-                    Navigator.of(context).pop();// Close the dialog
+                    _saveContactToPrefs(contact.displayName ?? '', contact.phones?.isNotEmpty == true ? contact.phones!.first.value ?? '' : '');
+                    Navigator.of(context).pop(); // Close the dialog
                   },
                 );
               },
@@ -689,6 +712,29 @@ class _FakeCallDetailsState extends State<FakeCallDetails> {
     }
   }
 
+  Future<void> _saveContactToPrefs(String name, String number) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('contactName', name);
+    prefs.setString('contactNumber', number);
+
+    setState(() {
+      _nameController.text = name;
+      _numberController.text = number;
+    });
+  }
+
+  Future<void> _loadContactFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString('contactName');
+    final number = prefs.getString('contactNumber');
+
+    if (name != null && number != null) {
+      setState(() {
+        _nameController.text = name;
+        _numberController.text = number;
+      });
+    }
+  }
 
   // Future<void> _saveImageToPrefs(String imagePath) async {
   //   final prefs = await SharedPreferences.getInstance();
@@ -1039,116 +1085,7 @@ class _FakeCallDetailsState extends State<FakeCallDetails> {
     );
   }
 
-//
-// Widget dialogContent(BuildContext context) {
-//   List<String> avatars = ['BFF', 'Mom', 'Brother', 'Dada', 'Husband', 'Dad', 'Police', 'Sister', 'Dadi'];
-//   int? selectedAvatarIndex;
-//   bool loading = false;
-//
-//   return StatefulBuilder(
-//     builder: (BuildContext context, StateSetter setState) {
-//       return Container(
-//         height: 430, // Increased height to accommodate the button
-//         width: 350,
-//         decoration: BoxDecoration(
-//           color: Colors.white,
-//           borderRadius: BorderRadius.circular(15),
-//         ),
-//         child: Column(
-//           children: [
-//             Padding(
-//               padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 7),
-//               child: GridView.count(
-//                 crossAxisCount: 3,
-//                 shrinkWrap: true,
-//                 children: List.generate(9, (index) {
-//                   return GestureDetector(
-//                     onTap: () async {
-//                       setState(() {
-//                         selectedAvatarIndex = index;
-//                         loading = true; // Show loader
-//                       });
-//                       // Simulate some loading delay (you can remove this in your actual code)
-//                       await Future.delayed(Duration(seconds: 1));
-//                       setState(() {
-//                         _selectedAvatarImagePath = 'assets/images/avatar$index.png'; // Update the selected avatar image path
-//                         loading = false; // Hide loader
-//                       });
-//                     },
-//                     child: Column(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         Container(
-//                           decoration: BoxDecoration(
-//                             color: Colors.grey.shade200,
-//                             shape: BoxShape.circle,
-//                             border: selectedAvatarIndex == index
-//                                 ? Border.all(color: Colors.green, width: 2.0) // Highlight selected avatar
-//                                 : null,
-//                           ),
-//                           child: Padding(
-//                             padding: const EdgeInsets.all(15.0),
-//                             child: Image.asset(
-//                               'assets/images/avatar$index.png',
-//                               width: 40,
-//                               height: 40,
-//                               fit: BoxFit.cover,
-//                             ),
-//                           ),
-//                         ),
-//                         SizedBox(height: 4),
-//                         Padding(
-//                           padding: const EdgeInsets.symmetric(horizontal: 8),
-//                           child: Text(
-//                             avatars[index],
-//                             textAlign: TextAlign.center,
-//                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   );
-//                 }),
-//               ),
-//             ),
-//             // Show loader if loading is true
-//             ElevatedButton(
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: Color(0xFF4C2559),
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
-//                 ),
-//                 minimumSize: Size(
-//                   MediaQuery.of(context).size.width * 0.40,
-//                   MediaQuery.of(context).size.height * 0.06,
-//                 ),
-//               ),
-//               onPressed: () async {
-//                 if (selectedAvatarIndex != null) {
-//                   // Save the selected avatar image using the index
-//                   _saveImageToPrefs('assets/images/avatar$selectedAvatarIndex.png');
-//                   // Update the UI immediately
-//                   setState(() {
-//                     _selectedAvatarImagePath = 'assets/images/avatar$selectedAvatarIndex.png';
-//                     _imagePath = null;
-//                     _image = null;
-//                   });
-//                   Navigator.of(context).pop(); // Close the dialog
-//                 } else {
-//                   // Show a message to the user to select an avatar
-//                   ScaffoldMessenger.of(context).showSnackBar(
-//                     SnackBar(content: Text('Please select an avatar')),
-//                   );
-//                 }
-//               },
-//               child: Text('Save'),
-//             ),
-//           ],
-//         ),
-//       );
-//     },
-//   );
-// }
+
 
 
 }
