@@ -53,11 +53,9 @@
 //   }
 // }
 
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:kavach_project/presentation/Emergency_helplinecall_screen/provider/Emergency_helplinecall_screen_provider.dart';
 import 'package:kavach_project/presentation/Feedback_screen/provider/Feedback_screen_provider.dart';
 import 'package:kavach_project/presentation/National_helpline_screen/provider/National_helpline_screeen_provider.dart';
 import 'package:kavach_project/presentation/Newpassword_screen/provider/Newpassword_screen_provider.dart';
@@ -105,7 +103,6 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (context) => HelplineProvider()),
             ChangeNotifierProvider(create: (context) => SettingsProvider()),
             ChangeNotifierProvider(create: (context) => FriendProvider()),
-            ChangeNotifierProvider(create: (context) => EmergencyHelplineProvider()),
             ChangeNotifierProvider(create: (context) => ForgetPassProvider()),
             ChangeNotifierProvider(create: (context) => FeedbackProvider()),
             ChangeNotifierProvider(create: (context) => HomeProvider()),
