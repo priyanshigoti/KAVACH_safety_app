@@ -369,6 +369,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:kavach_project/presentation/E-learning/desc_eLearning.dart';
+import 'package:kavach_project/presentation/Legal_screen/about_us_discription.dart';
+import 'package:kavach_project/presentation/Legal_screen/terms_conditions_screen.dart';
 import 'package:kavach_project/presentation/Settings_screen/settings_screen.dart';
 import 'package:kavach_project/presentation/contactlist.dart';
 import 'package:kavach_project/presentation/history_page/history_page.dart';
@@ -467,7 +469,27 @@ class _DrawerscreenState extends State<Drawerscreen> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.30),
+                    padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.38),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        buildMenuContainer("assets/study.png", "E-learning", context, () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => desc_eLearning()));
+
+                        }),
+                        // buildMenuContainer("assets/settings.png", "Settings", context, () {
+                        //   Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
+                        // }),
+                        buildMenuContainer("assets/help.png", "Help", context, () {
+                          //logoutConfirmation(context);
+                             Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpLoginScreen()));
+                        }),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.18),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -476,9 +498,6 @@ class _DrawerscreenState extends State<Drawerscreen> {
                         }),
                         buildMenuContainer("assets/contact-book (3).png", "SOS contact", context, () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => Addfriend()));
-                        }),
-                        buildMenuContainer("assets/to-do-list.png", "Blocklist", context, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ContactSearch()));
                         }),
                       ],
                     ),
@@ -526,7 +545,7 @@ class _DrawerscreenState extends State<Drawerscreen> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.49),
+                    padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.58),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -534,31 +553,27 @@ class _DrawerscreenState extends State<Drawerscreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => FeedBackScreen()));
                         }),
                         buildMenuContainer("assets/legal-document.png", "Legal", context, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => Legal_screen()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => Terms_conditions()));
                         }),
-                        buildMenuContainer("assets/help.png", "Help", context, () {}),
                       ],
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.68),
+                    padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.78),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        buildMenuContainer("assets/study.png", "E-learning", context, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => desc_eLearning()));
+                        buildMenuContainer("assets/about us.png", "About us", context, () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => about_us_screen()));
 
                         }),
                         buildMenuContainer("assets/settings.png", "Settings", context, () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
                         }),
-                        buildMenuContainer("assets/power-off.png", "Log-out", context, () {
-                          logoutConfirmation(context);
-                       //   Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpLoginScreen()));
-                        }),
                       ],
                     ),
                   ),
+
                 ],
               ),
             ),
@@ -590,7 +605,7 @@ class _DrawerscreenState extends State<Drawerscreen> {
           ],
         ),
         height: MediaQuery.of(context).size.width * 0.28,
-        width: MediaQuery.of(context).size.width * 0.28,
+        width: MediaQuery.of(context).size.width * 0.35,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
           color: Colors.purple.shade50,

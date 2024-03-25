@@ -129,7 +129,7 @@ class _Terms_conditionsState extends State<Terms_conditions> {
                                 _toggleTerms(true);
                               },
                             ),
-                            SizedBox(height: 13),
+                            SizedBox(height: 10),
                             Center(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(

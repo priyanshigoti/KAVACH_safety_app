@@ -18,7 +18,31 @@ class _FakeCallDetailsState extends State<FakeCallDetails> {
 
 
   Future<void> openContactBook() async {
+    // Show loader
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing the dialog
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text('Loading contacts...'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
     Iterable<Contact> contacts = await ContactsService.getContacts();
+    // Dismiss the loader dialog
+    Navigator.of(context).pop();
+
     // Use the contacts list as per your requirement, e.g., display in a dialog
     showDialog(
       context: context,
@@ -37,8 +61,7 @@ class _FakeCallDetailsState extends State<FakeCallDetails> {
                   subtitle: Text(contact.phones?.isNotEmpty == true ? contact.phones!.first.value ?? '' : ''),
                   onTap: () {
                     // When a contact is tapped, update the text fields
-                    _nameController.text = contact.displayName ?? '';
-                    _numberController.text = contact.phones?.isNotEmpty == true ? contact.phones!.first.value ?? '' : '';
+                    _saveContactToPrefs(contact.displayName ?? '', contact.phones?.isNotEmpty == true ? contact.phones!.first.value ?? '' : '');
                     Navigator.of(context).pop(); // Close the dialog
                   },
                 );
@@ -76,6 +99,8 @@ class _FakeCallDetailsState extends State<FakeCallDetails> {
   void initState() {
     super.initState();
     _loadImageFromPrefs();
+    _loadContactFromPrefs();
+
   }
 
   Future<void> getImageFromGallery() async {
@@ -113,32 +138,6 @@ class _FakeCallDetailsState extends State<FakeCallDetails> {
     }
   }
 
-
-  // Future<void> _saveImageToPrefs(String imagePath) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   prefs.setString('imagePath', imagePath);
-  // }
-  //
-  // Future<void> _loadImageFromPrefs() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final imagePath = prefs.getString('imagePath');
-  //   if (imagePath != null) {
-  //     if (imagePath.startsWith('assets')) {
-  //       setState(() {
-  //         _selectedAvatarImagePath = imagePath;
-  //         _imagePath = null;
-  //         _image = null;
-  //       });
-  //     } else {
-  //       setState(() {
-  //         _imagePath = imagePath;
-  //         _image = File(imagePath);
-  //         _selectedAvatarImagePath = null;
-  //       });
-  //     }
-  //   }
-  // }
-
   Future<void> _saveImageToPrefs(String imagePath) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('imagePath', imagePath);
@@ -173,6 +172,31 @@ class _FakeCallDetailsState extends State<FakeCallDetails> {
       });
     }
   }
+
+  Future<void> _saveContactToPrefs(String name, String number) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('contactName', name);
+    prefs.setString('contactNumber', number);
+
+    setState(() {
+      _nameController.text = name;
+      _numberController.text = number;
+    });
+  }
+
+  Future<void> _loadContactFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString('contactName');
+    final number = prefs.getString('contactNumber');
+
+    if (name != null && number != null) {
+      setState(() {
+        _nameController.text = name;
+        _numberController.text = number;
+      });
+    }
+  }
+
 
 
   TextEditingController _nameController = TextEditingController();

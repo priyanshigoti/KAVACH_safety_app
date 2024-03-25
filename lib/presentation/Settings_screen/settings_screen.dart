@@ -25,6 +25,7 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
 
+
   void logoutConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -115,19 +116,32 @@ class _SettingsState extends State<Settings> {
                   height: MediaQuery.of(context).size.height * 0.88 - 50,
                   child:
                   Padding(
-                    padding: const EdgeInsets.only(left: 20, top: 20),
+                    padding: const EdgeInsets.only(left: 10, top: 20,right: 10),
                     child:
-                    Column(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // "Terminate Account" container
-
                         SizedBox(height: 20), // Add space between "Terminate Account" and other settings
                         // Other settings
                         ...settingsProvider.settings.map((setting) {
                           return GestureDetector(
                             onTap: (){
-                              logoutConfirmation(context);
+                              if (setting.title == "Terminate Account"){
+                                logoutConfirmation(context);
+                              }
+                              else if (setting.title == "Log Out"){
+                                logoutConfirmation(context);
+                              }
+                              else {
+
+                              }
+                              // if (setting.title == "Terminate Account") {
+                              //   logoutConfirmation(context);
+                              // } else {
+                              //   // Handle tap for other settings
+                              // }
                             },
                             child: Container(
                               child: Column(
@@ -156,6 +170,8 @@ class _SettingsState extends State<Settings> {
                             ),
                           );
                         }).toList(),
+                        // Add two more containers
+                        SizedBox(height: 20), // Add space between the second and third settings
                       ],
                     ),
                   ),

@@ -539,17 +539,20 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: CupertinoButton(
-              onPressed: () async {
-                try{
-                  final FirebaseAuth _auth = FirebaseAuth.instance;
-                  final User user = _auth.currentUser!;
-
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfilePage(
-                      user: user
-                  )));
-                }catch(e){
-                  print(e);
-                }
+              // onPressed: () async {
+              //   try{
+              //     final FirebaseAuth _auth = FirebaseAuth.instance;
+              //     final User user = _auth.currentUser!;
+              //
+              //     Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfilePage(
+              //         user: user
+              //     )));
+              //   }catch(e){
+              //     print(e);
+              //   }
+              // },
+              onPressed: (){
+                //Navigator.push(context, MaterialPageRoute(builder: (context)=>ThemeSwitcherPage()));
               },
               child: Icon(CupertinoIcons.person, color: Color(0xFF4C2559)),
             ),

@@ -333,6 +333,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:kavach_project/presentation/Legal_screen/about_us_discription.dart';
 import 'package:kavach_project/presentation/Legal_screen/terms_conditions_screen.dart';
 
 class Legal_screen extends StatefulWidget {
@@ -453,7 +454,7 @@ class _Legal_screenState extends State<Legal_screen> {
                               padding: const EdgeInsets.all(8.0),
                               child: GestureDetector(
                                 onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Terms_conditions()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>about_us_screen()));
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
