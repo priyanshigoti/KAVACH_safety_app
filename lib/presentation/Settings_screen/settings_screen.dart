@@ -128,10 +128,10 @@ class _SettingsState extends State<Settings> {
                         ...settingsProvider.settings.map((setting) {
                           return GestureDetector(
                             onTap: (){
-                              if (setting.title == "Terminate Account"){
-                                logoutConfirmation(context);
-                              }
-                              else if (setting.title == "Log Out"){
+                              // if (setting.title == "Terminate Account"){
+                              //   logoutConfirmation(context);
+                              // }
+                               if (setting.title == "Log Out"){
                                 logoutConfirmation(context);
                               }
                               else {

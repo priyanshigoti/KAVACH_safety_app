@@ -5,6 +5,7 @@ import 'package:direct_sms/direct_sms.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:kavach_project/presentation/home_page/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -77,7 +78,7 @@ class ContactManager {
   Future<bool> _checkSmsLimitExceeded() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int smsCount = prefs.getInt('smsCount') ?? 0;
-    return smsCount >= 7;
+    return smsCount >= 15;
   }
 
   Future<void> _incrementSmsCount() async {
@@ -180,6 +181,7 @@ class _CountdownPageState extends State<CountdownPage> {
           if (!_smsSent) {
             _smsSent = true; // Mark SMS as sent
             ContactManager().sendLiveLocationToSelectedContacts(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
           }
         } else {
           setState(() {

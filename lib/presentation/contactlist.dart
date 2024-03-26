@@ -64,8 +64,8 @@ class ContactManager {
       DocumentSnapshot doc = await docRef.get();
       if (doc.exists) {
         List<dynamic> contacts = doc['contacts'];
-        contacts.removeWhere((contactData) =>
-        contactData['displayName'] == displayName);
+        contacts.removeWhere(
+                (contactData) => contactData['displayName'] == displayName);
         await docRef.update({'contacts': contacts});
       }
     } catch (e) {
@@ -89,6 +89,7 @@ class _ContactSearchState extends State<ContactSearch> {
   TextEditingController _searchController = TextEditingController();
   List<Contact> _selectedContacts = [];
   final ContactManager _contactManager = ContactManager();
+  bool _isLoading = true; // Added
 
   @override
   void initState() {
@@ -102,13 +103,15 @@ class _ContactSearchState extends State<ContactSearch> {
     setState(() {
       _contacts = contacts;
       _filteredContacts = _contacts;
+      _isLoading = false; // Updated
     });
   }
 
   Future<void> _fetchSelectedContacts() async {
     String userId = AuthService().getCurrentUser()?.uid ?? '';
     if (userId.isNotEmpty) {
-      Stream<DocumentSnapshot> snapshot = _contactManager.getUserContacts(userId);
+      Stream<DocumentSnapshot> snapshot =
+      _contactManager.getUserContacts(userId);
       snapshot.listen((DocumentSnapshot document) {
         setState(() {
           _selectedContacts.clear();
@@ -138,31 +141,54 @@ class _ContactSearchState extends State<ContactSearch> {
     });
   }
 
-  Future<void> _showAddContactDialog(Contact contact) async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Add Contact'),
-          content: Text('Do you want to add ${contact.displayName}?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-              },
-              child: Text('No'),
-            ),
-            TextButton(
-              onPressed: () {
-                _addContact(contact);
-                Navigator.of(context).pop(); // Close dialog
-              },
-              child: Text('Yes'),
-            ),
-          ],
-        );
-      },
-    );
+  void _showAddContactDialog(Contact contact) async {
+    if (_selectedContacts.contains(contact)) {
+      // If the contact is already selected, show an alert dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Contact Already Added'),
+            content: Text(
+                '${contact.displayName} is already in your selected contacts.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // If the contact is not selected, show confirmation dialog to add
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Add Contact'),
+            content: Text('Do you want to add ${contact.displayName}?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close dialog
+                },
+                child: Text('No'),
+              ),
+              TextButton(
+                onPressed: () {
+                  _addContact(contact);
+                  Navigator.of(context).pop(); // Close dialog
+                },
+                child: Text('Yes'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void _addContact(Contact contact) async {
@@ -191,8 +217,9 @@ class _ContactSearchState extends State<ContactSearch> {
           ),
         ),
       ),
-      body: _filteredContacts != null
-          ? ListView.builder(
+      body: _isLoading // Updated
+          ? Center(child: CircularProgressIndicator()) // Updated
+          : ListView.builder(
         itemCount: _filteredContacts.length,
         itemBuilder: (context, index) {
           Contact contact = _filteredContacts.elementAt(index);
@@ -211,9 +238,6 @@ class _ContactSearchState extends State<ContactSearch> {
             },
           );
         },
-      )
-          : Center(
-        child: CircularProgressIndicator(),
       ),
       floatingActionButton: _selectedContacts.isNotEmpty
           ? FloatingActionButton.extended(
@@ -251,7 +275,7 @@ class SelectedContactsPage extends StatefulWidget {
   });
 
   @override
-  _SelectedContactsPageState createState() => _SelectedContactsPageState();
+  _SelectedContactsPageState createState() =>_SelectedContactsPageState();
 }
 
 class _SelectedContactsPageState extends State<SelectedContactsPage> {
@@ -313,7 +337,8 @@ class _SelectedContactsPageState extends State<SelectedContactsPage> {
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
-                  child: Text('Remove', style: TextStyle(color: Colors.white)),
+                  child:
+                  Text('Remove', style: TextStyle(color: Colors.white)),
                 ),
               ),
             ),
@@ -366,3 +391,4 @@ void main() async {
     home: ContactSearch(),
   ));
 }
+

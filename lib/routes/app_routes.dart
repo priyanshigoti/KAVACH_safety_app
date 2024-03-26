@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
-import '../presentation/password_screen/password_screen.dart';
 import '../presentation/profile_screen/profile_screen.dart';
 import '../presentation/sign_up_login_screen/sign_up_login_screen.dart';
 import '../presentation/splash_screen/splash_screen.dart';
@@ -41,7 +40,6 @@ class AppRoutes {
   static Map<String, WidgetBuilder> get routes => {
         splashScreen: SplashScreen.builder,
         signUpLoginScreen: SignUpLoginScreen.builder,
-        passwordScreen: PasswordScreen.builder,
         //forgetPassScreen: ForgetPass.builder,
      //   drawerScreen: DrawerScreen.builder,
        // profileScreen: ProfileScreen.builder,

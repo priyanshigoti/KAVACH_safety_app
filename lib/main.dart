@@ -65,7 +65,6 @@ import 'package:kavach_project/presentation/drawer_screen/provider/drawer_provid
 import 'package:kavach_project/presentation/forget_pass_screen/provider/forget_pass_provider.dart';
 import 'package:kavach_project/presentation/home_page/provider/home_provider.dart';
 import 'package:kavach_project/presentation/invite_friend/provider/invite_friend_provider.dart';
-import 'package:kavach_project/presentation/password_screen/provider/password_provider.dart';
 import 'package:kavach_project/presentation/profile_screen/provider/profile_provider.dart';
 import 'package:kavach_project/presentation/sign_up_login_screen/provider/sign_up_login_provider.dart';
 import 'package:kavach_project/presentation/splash_screen/provider/splash_provider.dart';
@@ -98,7 +97,6 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (context) => SplashProvider()),
             ChangeNotifierProvider(create: (context) => SignUpLoginProvider()),
             ChangeNotifierProvider(create: (context) => RegisterProvider()),
-            ChangeNotifierProvider(create: (context) => PasswordProvider()),
             ChangeNotifierProvider(create: (context) => NewPasswordProvider()),
             ChangeNotifierProvider(create: (context) => HelplineProvider()),
             ChangeNotifierProvider(create: (context) => SettingsProvider()),

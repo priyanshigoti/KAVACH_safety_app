@@ -166,17 +166,17 @@ class _SOSPageState extends State<SOSPage> {
   stt.SpeechToText _speech = stt.SpeechToText();
   bool _isListening = false;
   String _text = 'Press the button and say the selected word';
-  String _selectedWord = 'Shield'; // Default selected word
+  String _selectedWord = 'Help'; // Default selected word
   double _sensitivity = 0.5; // Default sensitivity value
 
-  List<String> _words = ['Shield', 'Rakshit', 'Dog', 'Now', 'Robin', 'Support', 'Saharo', 'Dove', 'Owl'];
+  List<String> _words = ['Help','Shield', 'Rakshit', 'Dog', 'Now', 'Robin', 'Support', 'Saharo', 'Dove', 'Owl'];
 
   TextEditingController _wordController = TextEditingController(); // Controller for the TextField
 
   @override
   void initState() {
     super.initState();
-    _selectedWord = 'Robin'; // Set the default selected word to "Robin"
+    _selectedWord = 'Help'; // Set the default selected word to "Robin"
     _wordController.text = _selectedWord; // Update the text field
     _listen(); // Start listening for voice input
   }
@@ -402,35 +402,6 @@ class _SOSPageState extends State<SOSPage> {
       print('Volume too low. SOS not activated.');
     }
   }
-
-
-  // void _changeWord() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text('Change Selected Word'),
-  //         content: DropdownButton<String>(
-  //           value: _selectedWord,
-  //           onChanged: (String? newValue) {
-  //             setState(() {
-  //               _selectedWord = newValue!;
-  //               _wordController.text = newValue;
-  //               _listen();
-  //             });
-  //             Navigator.of(context).pop();
-  //           },
-  //           items: _words.map<DropdownMenuItem<String>>((String value) {
-  //             return DropdownMenuItem<String>(
-  //               value: value,
-  //               child: Text(value),
-  //             );
-  //           }).toList(),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 
   void _changeWord() {
     showDialog(

@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -88,24 +90,68 @@ class ContactManager {
 
   Future<bool> _checkSmsLimitExceeded() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    int smsCount = prefs.getInt('smsCount') ?? 0;
-    DateTime lastSentDate = DateTime.parse(prefs.getString('lastSentDate') ?? DateTime.now().toString());
+    String userId = AuthService().getCurrentUser()?.uid ?? '';
     DateTime now = DateTime.now();
+
+    // Check if user preferences exist
+    if (!prefs.containsKey(userId)) {
+      // If user preferences don't exist, initialize with default values
+      prefs.setString(userId, jsonEncode({'smsCount': 0, 'lastSentDate': now.toString()}));
+    }
+
+    // Get user preferences
+    Map<String, dynamic> userData = jsonDecode(prefs.getString(userId) ?? '{}');
+    int smsCount = userData['smsCount'] ?? 0;
+    DateTime lastSentDate = DateTime.parse(userData['lastSentDate'] ?? now.toString());
+
+    // Check if it's a new day
     if (now.year != lastSentDate.year || now.month != lastSentDate.month || now.day != lastSentDate.day) {
       // Reset count if it's a new day
       smsCount = 0;
-      await prefs.setInt('smsCount', smsCount); // Reset count in SharedPreferences
     }
+
     return smsCount >= 7;
   }
 
   Future<void> _incrementSmsCount() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    int smsCount = prefs.getInt('smsCount') ?? 0;
-    smsCount++;
-    await prefs.setInt('smsCount', smsCount); // Update count in SharedPreferences
-    await prefs.setString('lastSentDate', DateTime.now().toString());
+    String userId = AuthService().getCurrentUser()?.uid ?? '';
+
+    // Get user preferences
+    Map<String, dynamic> userData = jsonDecode(prefs.getString(userId) ?? '{}');
+    int smsCount = userData['smsCount'] ?? 0;
+
+    // Increment count
+    smsCount = smsCount + 1;
+
+    // Update user preferences
+    userData['smsCount'] = smsCount;
+    userData['lastSentDate'] = DateTime.now().toString();
+    prefs.setString(userId, jsonEncode(userData));
   }
+
+
+
+  // Future<bool> _checkSmsLimitExceeded() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   int smsCount = prefs.getInt('smsCount') ?? 0;
+  //   DateTime lastSentDate = DateTime.parse(prefs.getString('lastSentDate') ?? DateTime.now().toString());
+  //   DateTime now = DateTime.now();
+  //   if (now.year != lastSentDate.year || now.month != lastSentDate.month || now.day != lastSentDate.day) {
+  //     // Reset count if it's a new day
+  //     smsCount = 0;
+  //     await prefs.setInt('smsCount', smsCount); // Reset count in SharedPreferences
+  //   }
+  //   return smsCount >= 7;
+  // }
+  //
+  // Future<void> _incrementSmsCount() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   int smsCount = prefs.getInt('smsCount') ?? 0;
+  //   smsCount++;
+  //   await prefs.setInt('smsCount', smsCount); // Update count in SharedPreferences
+  //   await prefs.setString('lastSentDate', DateTime.now().toString());
+  // }
 
   void _showSmsLimitExceededAlert(BuildContext context) {
     showDialog(
@@ -199,6 +245,8 @@ class ContactManager {
     }
   }
 }
+
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -539,21 +587,21 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
             icon: CupertinoButton(
-              // onPressed: () async {
-              //   try{
-              //     final FirebaseAuth _auth = FirebaseAuth.instance;
-              //     final User user = _auth.currentUser!;
-              //
-              //     Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfilePage(
-              //         user: user
-              //     )));
-              //   }catch(e){
-              //     print(e);
-              //   }
-              // },
-              onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ThemeSwitcherPage()));
+              onPressed: () async {
+                try{
+                  final FirebaseAuth _auth = FirebaseAuth.instance;
+                  final User user = _auth.currentUser!;
+
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> ProfileScreen(
+                      user: user
+                  )));
+                }catch(e){
+                  print(e);
+                }
               },
+              // onPressed: (){
+              //   Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileScreen(user: user)));
+              // },
               child: Icon(CupertinoIcons.person, color: Color(0xFF4C2559)),
             ),
             label: 'Profile',

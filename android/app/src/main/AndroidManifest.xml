@@ -114,7 +114,7 @@
     <uses-permission android:name="com.example.kavach_project.permission.C2D_MESSAGE" />
 
     <application
-        android:label="kavach_project"
+        android:label="kavach"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

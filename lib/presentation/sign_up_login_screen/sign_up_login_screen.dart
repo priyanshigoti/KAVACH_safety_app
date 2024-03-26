@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,7 +13,6 @@ import '../../theme/theme_helper.dart';
 import '../../widgets/custom_image_view.dart';
 import '../../widgets/custom_outlined_button.dart';
 import '../Sign_up_screen/Sign_up_screen.dart';
-import '../forget_pass_screen/forget_pass_screen.dart';
 import '../home_page/home_page.dart';
 
 class SignUpLoginScreen extends StatefulWidget {
@@ -66,7 +66,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
 
       // Start the sign-in flow
       final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
+      await _googleSignIn.signIn();
 
       if (googleSignInAccount == null) {
         // User canceled the sign-in flow
@@ -75,7 +75,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
 
       // Obtain the GoogleSignInAuthentication object
       final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
+      await googleSignInAccount.authentication;
 
       // Create a new credential
       final AuthCredential credential = GoogleAuthProvider.credential(
@@ -85,7 +85,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
 
       // Sign in to Firebase with the Google credential
       final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      await _auth.signInWithCredential(credential);
 
       // Get the user information
       final User? user = userCredential.user;
@@ -101,28 +101,82 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
     }
   }
 
+  // void login() {
+  //   if (_formkey.currentState!.validate()) {
+  //     FirebaseAuth.instance
+  //         .signInWithEmailAndPassword(
+  //       email: emailController.text.trim(),
+  //       password: passwordController.text.trim(),
+  //     )
+  //         .then((userCredential) {
+  //       // Login successful
+  //       String userEmail = userCredential.user!.email!;
+  //       Utils.showToast("Logged in as $userEmail");
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => HomePage()),
+  //       );
+  //     }).catchError((error) {
+  //       // Login failed
+  //       debugPrint("Login error: $error");
+  //       Utils.showToast("Login failed. Please check your credentials.");
+  //     });
+  //   }
+  // }
   void login() {
     if (_formkey.currentState!.validate()) {
-      FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      )
-          .then((userCredential) {
-        // Login successful
-        String userEmail = userCredential.user!.email!;
-        Utils.showToast("Logged in as $userEmail");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+      String email = emailController.text.trim();
+      String password = passwordController.text.trim();
+
+      // Check if the user is blocked
+      FirebaseFirestore.instance
+          .collection('user')
+          .where('email', isEqualTo: email)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        if (querySnapshot.docs.isNotEmpty) {
+          var userData = querySnapshot.docs.first.data() as Map<String, dynamic>; // Explicit cast
+          bool isBlocked = userData['blocked'] ?? false; // Use null-aware operator
+
+          if (isBlocked) {
+            // User is blocked
+            Utils.showToast("$email is blocked"); // Show toast message
+          } else {
+            // User is not blocked, proceed with login
+            FirebaseAuth.instance
+                .signInWithEmailAndPassword(email: email, password: password)
+                .then((userCredential) {
+              // Login successful
+              String userEmail = userCredential.user!.email!;
+              Utils.showToast("Logged in as $userEmail");
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            }).catchError((error) {
+              // Login failed
+              debugPrint("Login error: $error");
+              Utils.showToast("Login failed. Please check your credentials.");
+            });
+          }
+        } else {
+          // User not found
+          Utils.showToast("User not found");
+        }
       }).catchError((error) {
-        // Login failed
-        debugPrint("Login error: $error");
-        Utils.showToast("Login failed. Please check your credentials.");
+        // Error handling
+        Utils.showToast("Error: $error");
       });
     }
   }
+
+
+
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -164,9 +218,9 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                                   borderSide: BorderSide.none),
                               contentPadding: EdgeInsets.symmetric(
                                   vertical:
-                                      MediaQuery.of(context).size.height * 0.02,
+                                  MediaQuery.of(context).size.height * 0.02,
                                   horizontal:
-                                      MediaQuery.of(context).size.width * 0.03),
+                                  MediaQuery.of(context).size.width * 0.03),
                               fillColor: Colors.grey.shade100,
                               focusColor: Colors.black,
                               filled: true,
@@ -194,9 +248,9 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                                   borderSide: BorderSide.none),
                               contentPadding: EdgeInsets.symmetric(
                                   vertical:
-                                      MediaQuery.of(context).size.height * 0.02,
+                                  MediaQuery.of(context).size.height * 0.02,
                                   horizontal:
-                                      MediaQuery.of(context).size.width * 0.03),
+                                  MediaQuery.of(context).size.width * 0.03),
                               fillColor: Colors.grey.shade100,
                               focusColor: Colors.black,
                               filled: true,
@@ -221,11 +275,11 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                           children: [
                             TextButton(
                               onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EmailRecovery()));
+                                //   Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //           builder: (context) =>
+                                //               //email_recovery()));
                               },
                               child: Text(
                                 "Forget Password?",
@@ -264,7 +318,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                             child: Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal:
-                                      MediaQuery.of(context).size.width * 0.02),
+                                  MediaQuery.of(context).size.width * 0.02),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -273,11 +327,11 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                         top:
-                                            MediaQuery.of(context).size.height *
-                                                0.004,
+                                        MediaQuery.of(context).size.height *
+                                            0.004,
                                         bottom:
-                                            MediaQuery.of(context).size.height *
-                                                0.01,
+                                        MediaQuery.of(context).size.height *
+                                            0.01,
                                       ),
                                       child: Divider(
                                         color: appTheme.black900,
@@ -287,8 +341,8 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                                   Padding(
                                     padding: EdgeInsets.symmetric(
                                         horizontal:
-                                            MediaQuery.of(context).size.width *
-                                                0.02),
+                                        MediaQuery.of(context).size.width *
+                                            0.02),
                                     child: Text(
                                       "lbl_or".tr,
                                       style: CustomTextStyles.bodyMedium15,
@@ -298,11 +352,11 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                         top:
-                                            MediaQuery.of(context).size.height *
-                                                0.004,
+                                        MediaQuery.of(context).size.height *
+                                            0.004,
                                         bottom:
-                                            MediaQuery.of(context).size.height *
-                                                0.01,
+                                        MediaQuery.of(context).size.height *
+                                            0.01,
                                       ),
                                       child: Divider(
                                         color: appTheme.black900,
@@ -317,7 +371,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                         ),
                         Padding(
                           padding:
-                              const EdgeInsets.only(left: 3, top: 11, right: 3),
+                          const EdgeInsets.only(left: 3, top: 11, right: 3),
                           child: CustomOutlinedButton(
                             onPressed: _signInWithGoogle,
                             text: "msg_continue_with_google".tr,
@@ -326,25 +380,25 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                               right: MediaQuery.of(context).size.width * 0.002,
                               top: MediaQuery.of(context).size.height * 0.002,
                               bottom:
-                                  MediaQuery.of(context).size.height * 0.002,
+                              MediaQuery.of(context).size.height * 0.002,
                             ),
                             leftIcon: Container(
                               margin: EdgeInsets.only(
                                   right:
-                                      MediaQuery.of(context).size.width * 0.03),
+                                  MediaQuery.of(context).size.width * 0.03),
                               child: CustomImageView(
                                 imagePath: ImageConstant
                                     .imgVecteezygooglelogoontransparentbackgroundpopularsearchengine292849641,
                                 height:
-                                    MediaQuery.of(context).size.height * 0.02,
+                                MediaQuery.of(context).size.height * 0.02,
                                 width:
-                                    MediaQuery.of(context).size.height * 0.02,
+                                MediaQuery.of(context).size.height * 0.02,
                               ),
                             ),
                             buttonStyle:
-                                CustomButtonStyles.outlineErrorContainer,
+                            CustomButtonStyles.outlineErrorContainer,
                             buttonTextStyle:
-                                CustomTextStyles.bodySmallBlack90012,
+                            CustomTextStyles.bodySmallBlack90012,
                           ),
                         ),
                         SizedBox(
