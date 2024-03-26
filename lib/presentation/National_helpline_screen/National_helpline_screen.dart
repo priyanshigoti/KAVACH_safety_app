@@ -120,20 +120,6 @@ class _HelplineState extends State<Helpline> {
                             ),
                           ),
                         ),
-                        Positioned(
-                          left: screenWidth * 0.8929,
-                          top: screenHeight * 0.051,
-                          child: GestureDetector(
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>Drawerscreen()));
-                            },
-                            child: Container(
-                              width: screenWidth * 0.0485,
-                              height: screenHeight * 0.0221,
-                              child: Icon(Icons.menu, color: Color(0xFF4C2559),size: 30,),
-                            ),
-                          ),
-                        ),
 
                       ],
                     ),
