@@ -116,10 +116,10 @@ class _SettingsState extends State<Settings> {
                   height: MediaQuery.of(context).size.height * 0.88 - 50,
                   child:
                   Padding(
-                    padding: const EdgeInsets.only(left: 10, top: 20,right: 10),
+                    padding: const EdgeInsets.only(left: 20, top: 20,right: 10),
                     child:
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // "Terminate Account" container

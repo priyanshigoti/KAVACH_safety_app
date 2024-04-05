@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:kavach_project/presentation/home_page/home_page.dart';
 
 class AcceptedCallScreen extends StatefulWidget {
   final String name;
@@ -168,7 +169,7 @@ class _AcceptedCallScreenState extends State<AcceptedCallScreen> {
             child: Center(
               child: FloatingActionButton(
                 onPressed: () {
-                  // Add your end call functionality here
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
                 },
                 backgroundColor: Colors.red,
                 child: Icon(Icons.call_end),

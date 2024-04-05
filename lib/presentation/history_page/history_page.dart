@@ -259,7 +259,7 @@ class HistoryPage extends StatelessWidget {
                   }
                   final String userId = userSnapshot.data!.uid;
                   return StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('users').doc(userId).collection('sms_history').snapshots(),
+                    stream: FirebaseFirestore.instance.collection('history').doc(userId).collection('sms_history').snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(

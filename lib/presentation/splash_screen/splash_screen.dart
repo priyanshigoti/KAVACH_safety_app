@@ -48,6 +48,8 @@ class SplashScreenState extends State<SplashScreen> {
     await _requestSMSPermission();
     await _requestLocationPermission();
     await _requestMicrophonePermission();
+    await _requestInternetPermission();
+
 
     // Navigating after permissions are requested
     NavigatorService.popAndPushNamed(AppRoutes.signUpLoginScreen);
@@ -61,6 +63,16 @@ class SplashScreenState extends State<SplashScreen> {
       // You might want to inform the user why the permission is needed
     }
   }
+
+  Future<void> _requestInternetPermission() async {
+    // Request permission to access contacts
+    PermissionStatus status = await Permission.contacts.request();
+    if (!status.isGranted) {
+      // Permission is denied
+      // You might want to inform the user why the permission is needed
+    }
+  }
+
 
   Future<void> _requestLocationPermission() async {
     // Request permission to access contacts

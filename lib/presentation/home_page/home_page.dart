@@ -110,7 +110,7 @@ class ContactManager {
       smsCount = 0;
     }
 
-    return smsCount >= 7;
+    return smsCount >= 8;
   }
 
   Future<void> _incrementSmsCount() async {
@@ -131,27 +131,6 @@ class ContactManager {
   }
 
 
-
-  // Future<bool> _checkSmsLimitExceeded() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   int smsCount = prefs.getInt('smsCount') ?? 0;
-  //   DateTime lastSentDate = DateTime.parse(prefs.getString('lastSentDate') ?? DateTime.now().toString());
-  //   DateTime now = DateTime.now();
-  //   if (now.year != lastSentDate.year || now.month != lastSentDate.month || now.day != lastSentDate.day) {
-  //     // Reset count if it's a new day
-  //     smsCount = 0;
-  //     await prefs.setInt('smsCount', smsCount); // Reset count in SharedPreferences
-  //   }
-  //   return smsCount >= 7;
-  // }
-  //
-  // Future<void> _incrementSmsCount() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   int smsCount = prefs.getInt('smsCount') ?? 0;
-  //   smsCount++;
-  //   await prefs.setInt('smsCount', smsCount); // Update count in SharedPreferences
-  //   await prefs.setString('lastSentDate', DateTime.now().toString());
-  // }
 
   void _showSmsLimitExceededAlert(BuildContext context) {
     showDialog(
@@ -209,7 +188,7 @@ class ContactManager {
         String placeName = await _getPlaceName(latitude, longitude);
 
         // Store SMS details in Firestore within user's document
-        await FirebaseFirestore.instance.collection('users').doc(userId).collection('sms_history').add({
+        await FirebaseFirestore.instance.collection('history').doc(userId).collection('sms_history').add({
           'message': message,
           'sentTo': phoneNumbers,
           'sentAt': Timestamp.fromDate(currentTime),
@@ -356,19 +335,83 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _onTrackMePressed() {
+  // void _onTrackMePressed() {
+  //   if (!_messageSent) {
+  //     _messageSent = true;
+  //     ContactManager().sendLiveLocationToSelectedContacts(context).then((_) {
+  //       // Reset _messageSent after sending SMS
+  //       _messageSent = false;
+  //     }).catchError((error) {
+  //       print("Error sending SMS: $error");
+  //       // Handle error, reset _messageSent in case of failure too
+  //       _messageSent = false;
+  //     });
+  //   }
+  // }
+
+
+  void _onTrackMePressed() async {
     if (!_messageSent) {
-      _messageSent = true;
-      ContactManager().sendLiveLocationToSelectedContacts(context).then((_) {
-        // Reset _messageSent after sending SMS
-        _messageSent = false;
-      }).catchError((error) {
-        print("Error sending SMS: $error");
-        // Handle error, reset _messageSent in case of failure too
-        _messageSent = false;
-      });
+      // Check if the user has selected any SOS contact
+      bool hasSOSContacts = await _checkSOSContacts();
+      if (hasSOSContacts) {
+        _messageSent = true;
+        ContactManager().sendLiveLocationToSelectedContacts(context).then((_) {
+          // Reset _messageSent after sending SMS
+          _messageSent = false;
+        }).catchError((error) {
+          print("Error sending SMS: $error");
+          // Handle error, reset _messageSent in case of failure too
+          _messageSent = false;
+        });
+      } else {
+        // Show alert if no SOS contacts are selected
+        _showNoSOSContactsAlert(context);
+      }
     }
   }
+
+  Future<bool> _checkSOSContacts() async {
+    String userId = AuthService().getCurrentUser()?.uid ?? '';
+    if (userId.isNotEmpty) {
+      DocumentSnapshot contactSnapshot = await FirebaseFirestore.instance.collection('contacts').doc(userId).get();
+      if (contactSnapshot.exists) {
+        Map<String, dynamic>? data = contactSnapshot.data() as Map<String, dynamic>?;
+        if (data != null && data.containsKey("contacts")) {
+          List<Map<String, dynamic>> contacts = List<Map<String, dynamic>>.from(data["contacts"] ?? []);
+          return contacts.isNotEmpty;
+        }
+      }
+    }
+    return false;
+  }
+
+  void _showNoSOSContactsAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('No SOS Contacts Selected'),
+        content: Text('Please add SOS contacts from the SOS contacts to use this feature.'),
+        actions: <Widget>[
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF4C2559),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
+              ),
+              minimumSize: Size(
+                MediaQuery.of(context).size.width * 0.30,
+                MediaQuery.of(context).size.height * 0.06,
+              ),
+            ),
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -512,7 +555,10 @@ class _HomePageState extends State<HomePage> {
           child: SizedBox(
             width: 120, // Adjust width as needed
             child: ElevatedButton(
-              onPressed: _onTrackMePressed,
+              onPressed: (){
+                _onTrackMePressed();
+                _getCurrentLocation();
+              },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),

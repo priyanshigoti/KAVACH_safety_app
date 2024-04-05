@@ -76,7 +76,7 @@ class _Help_screenState extends State<Help_screen> {
                                 onTap: (){
                                   _launchEmail(context);
                                 },
-                                  child: Text("kavach1@gmail.com",style: TextStyle(color: Colors.blue,fontSize: 15,decoration: TextDecoration.underline,),)),
+                                  child: Text("kavach645@gmail.com",style: TextStyle(color: Colors.blue,fontSize: 15,decoration: TextDecoration.underline,),)),
                               // TextButton(
                               //   onPressed: () {
                               //     _launchEmail(context);
@@ -110,7 +110,7 @@ class _Help_screenState extends State<Help_screen> {
   void _launchEmail(BuildContext context) async {
     final Uri params = Uri(
       scheme: 'mailto',
-      path: 'kavach1@gmail.com', // Replace with your email address
+      path: 'kavach645@gmail.com', // Replace with your email address
       query: 'subject=About%20KAVACH', // You can set a default subject here
     );
     final String url = params.toString();

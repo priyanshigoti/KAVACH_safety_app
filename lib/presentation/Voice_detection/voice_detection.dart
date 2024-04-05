@@ -1,10 +1,13 @@
 
 
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:direct_sms/direct_sms.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kavach_project/presentation/SOS/sos.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,117 +31,192 @@ class AuthService {
   }
 }
 
-class ContactManager {
-  final CollectionReference contactCollection =
-  FirebaseFirestore.instance.collection('contacts');
-
-  Future<void> sendLiveLocationToSelectedContacts(BuildContext context) async {
-    try {
-      bool isSmsLimitExceeded = await _checkSmsLimitExceeded();
-      if (isSmsLimitExceeded) {
-        _showSmsLimitExceededAlert(context); // Show alert if limit exceeded
-        return;
-      }
-
-      Position? position = await _getCurrentLocation();
-      if (position != null) {
-        String userId = AuthService().getCurrentUser()?.uid ?? '';
-        if (userId.isNotEmpty) {
-          DocumentSnapshot contactSnapshot =
-          await contactCollection.doc(userId).get();
-
-          if (contactSnapshot.exists) {
-            List<Map<String, dynamic>> contacts = [];
-            if (contactSnapshot.exists) {
-              Map<String, dynamic>? data =
-              contactSnapshot.data() as Map<String, dynamic>?;
-              if (data != null && data.containsKey("contacts")) {
-                contacts = List<Map<String, dynamic>>.from(data["contacts"] ?? []);
-              }
-            }
-
-            List<String> phoneNumbers = contacts
-                .map((contact) => contact['phoneNumber'] as String)
-                .toList();
-
-            String message =
-                'I am in trouble. Please help me. My current location is: https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}';
-
-            await _sendSMSBatch(
-                phoneNumbers, message, position.latitude, position.longitude);
-
-            await _incrementSmsCount();
-          }
-        }
-      }
-    } catch (e) {
-      print("Error sending live location to selected contacts: $e");
-    }
-  }
-
-  Future<bool> _checkSmsLimitExceeded() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int smsCount = prefs.getInt('smsCount') ?? 0;
-    return smsCount >= 7;
-  }
-
-  Future<void> _incrementSmsCount() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int smsCount = prefs.getInt('smsCount') ?? 0;
-    smsCount++;
-    await prefs.setInt('smsCount', smsCount);
-  }
-
-  void _showSmsLimitExceededAlert(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('SMS Limit Exceeded'),
-        content: Text('You have reached the maximum limit of 7 SMS for today.'),
-        actions: <Widget>[
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF4C2559),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
-              ),
-              minimumSize: Size(
-                MediaQuery.of(context).size.width * 0.30,
-                MediaQuery.of(context).size.height * 0.06,
-              ),
-            ),
-            onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-
-  Future<Position?> _getCurrentLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      return position;
-    } catch (e) {
-      print("Error getting current location: $e");
-      return null;
-    }
-  }
-
-  Future<void> _sendSMSBatch(List<String> phoneNumbers, String message, double latitude, double longitude) async {
-    try {
-      final DirectSms directSms = DirectSms();
-      for (final phoneNumber in phoneNumbers) {
-        directSms.sendSms(phone: phoneNumber, message: message, );
-      }
-      print('SMS sent to recipients: $phoneNumbers');
-    } catch (e) {
-      print('Error sending SMS batch: $e');
-    }
-  }
-}
+// class ContactManager {
+//   final CollectionReference contactCollection =
+//   FirebaseFirestore.instance.collection('contacts');
+//   final CollectionReference smsCollection =
+//   FirebaseFirestore.instance.collection('sms_history');
+//
+//   Future<void> sendLiveLocationToSelectedContacts(BuildContext context) async {
+//     try {
+//       bool isSmsLimitExceeded = await _checkSmsLimitExceeded();
+//       if (isSmsLimitExceeded) {
+//         _showSmsLimitExceededAlert(context); // Show alert if limit exceeded
+//         return;
+//       }
+//
+//       Position? position = await _getCurrentLocation();
+//       if (position != null) {
+//         String userId = AuthService().getCurrentUser()?.uid ?? '';
+//         if (userId.isNotEmpty) {
+//           DocumentSnapshot contactSnapshot =
+//           await contactCollection.doc(userId).get();
+//
+//           if (contactSnapshot.exists) {
+//             List<Map<String, dynamic>> contacts = [];
+//             if (contactSnapshot.exists) {
+//               Map<String, dynamic>? data =
+//               contactSnapshot.data() as Map<String, dynamic>?;
+//               if (data != null && data.containsKey("contacts")) {
+//                 contacts = List<Map<String, dynamic>>.from(data["contacts"] ?? []);
+//               }
+//             }
+//
+//             List<String> phoneNumbers = contacts
+//                 .map((contact) => contact['phoneNumber'] as String)
+//                 .toList();
+//
+//             String message =
+//                 'I am in trouble. Please help me. My current location is: https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}';
+//
+//             await _sendSMSBatch(
+//                 phoneNumbers, message, position.latitude, position.longitude);
+//
+//             await _incrementSmsCount();
+//           }
+//         }
+//       }
+//     } catch (e) {
+//       print("Error sending live location to selected contacts: $e");
+//     }
+//   }
+//
+//   Future<bool> _checkSmsLimitExceeded() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     String userId = AuthService().getCurrentUser()?.uid ?? '';
+//     DateTime now = DateTime.now();
+//
+//     // Check if user preferences exist
+//     if (!prefs.containsKey(userId)) {
+//       // If user preferences don't exist, initialize with default values
+//       prefs.setString(userId, jsonEncode({'smsCount': 0, 'lastSentDate': now.toString()}));
+//     }
+//
+//     // Get user preferences
+//     Map<String, dynamic> userData = jsonDecode(prefs.getString(userId) ?? '{}');
+//     int smsCount = userData['smsCount'] ?? 0;
+//     DateTime lastSentDate = DateTime.parse(userData['lastSentDate'] ?? now.toString());
+//
+//     // Check if it's a new day
+//     if (now.year != lastSentDate.year || now.month != lastSentDate.month || now.day != lastSentDate.day) {
+//       // Reset count if it's a new day
+//       smsCount = 0;
+//     }
+//
+//     return smsCount >= 7;
+//   }
+//
+//   Future<void> _incrementSmsCount() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     String userId = AuthService().getCurrentUser()?.uid ?? '';
+//
+//     // Get user preferences
+//     Map<String, dynamic> userData = jsonDecode(prefs.getString(userId) ?? '{}');
+//     int smsCount = userData['smsCount'] ?? 0;
+//
+//     // Increment count
+//     smsCount = smsCount + 1;
+//
+//     // Update user preferences
+//     userData['smsCount'] = smsCount;
+//     userData['lastSentDate'] = DateTime.now().toString();
+//     prefs.setString(userId, jsonEncode(userData));
+//   }
+//
+//
+//
+//   void _showSmsLimitExceededAlert(BuildContext context) {
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text('SMS Limit Exceeded'),
+//         content: Text('You have reached the maximum limit of 7 SMS for today.'),
+//         actions: <Widget>[
+//           ElevatedButton(
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: Color(0xFF4C2559),
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.04),
+//               ),
+//               minimumSize: Size(
+//                 MediaQuery.of(context).size.width * 0.30,
+//                 MediaQuery.of(context).size.height * 0.06,
+//               ),
+//             ),
+//             onPressed: () => Navigator.pop(context),
+//             child: Text('OK'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Future<Position?> _getCurrentLocation() async {
+//     try {
+//       Position position = await Geolocator.getCurrentPosition(
+//           desiredAccuracy: LocationAccuracy.high);
+//       return position;
+//     } catch (e) {
+//       print("Error getting current location: $e");
+//       return null;
+//     }
+//   }
+//
+//   Future<void> _sendSMSBatch(List<String> phoneNumbers, String message, double latitude, double longitude) async {
+//     try {
+//       final DirectSms directSms = DirectSms();
+//       for (final phoneNumber in phoneNumbers) {
+//         directSms.sendSms(phone: phoneNumber, message: message);
+//       }
+//       print('SMS sent to recipients: $phoneNumbers');
+//
+//       // Get current user ID
+//       String userId = AuthService().getCurrentUser()?.uid ?? '';
+//
+//       if (userId.isNotEmpty) {
+//         // Get current timestamp
+//         DateTime currentTime = DateTime.now();
+//
+//         // Get place name from latitude and longitude
+//         String placeName = await _getPlaceName(latitude, longitude);
+//
+//         // Store SMS details in Firestore within user's document
+//         await FirebaseFirestore.instance.collection('users').doc(userId).collection('sms_history').add({
+//           'message': message,
+//           'sentTo': phoneNumbers,
+//           'sentAt': Timestamp.fromDate(currentTime),
+//           'location': GeoPoint(latitude, longitude),
+//           'placeName': placeName,
+//         });
+//         print('SMS details stored in Firestore for user: $userId');
+//       } else {
+//         print('User ID is empty. Cannot store SMS details.');
+//       }
+//     } catch (e) {
+//       print('Error sending SMS batch: $e');
+//     }
+//   }
+//
+//   Future<String> _getPlaceName(double latitude, double longitude) async {
+//     try {
+//       List<Placemark> placemarks =
+//       await placemarkFromCoordinates(latitude, longitude);
+//       Placemark place = placemarks[0];
+//       // Extract the desired location information, such as locality, subLocality, or thoroughfare
+//       String location = place.locality ?? '';
+//       if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+//         location += ', ' + place.subLocality!;
+//       }
+//       if (place.thoroughfare != null && place.thoroughfare!.isNotEmpty) {
+//         location += ', ' + place.thoroughfare!;
+//       }
+//       return location;
+//     } catch (e) {
+//       print('Error getting place name: $e');
+//       return '';
+//     }
+//   }
+// }
 
 void main() {
   runApp(MyApp());
@@ -167,7 +245,7 @@ class _SOSPageState extends State<SOSPage> {
   bool _isListening = false;
   String _text = 'Press the button and say the selected word';
   String _selectedWord = 'Help'; // Default selected word
-  double _sensitivity = 0.5; // Default sensitivity value
+  double _sensitivity = 1; // Default sensitivity value
 
   List<String> _words = ['Help','Shield', 'Rakshit', 'Dog', 'Now', 'Robin', 'Support', 'Saharo', 'Dove', 'Owl'];
 
@@ -371,6 +449,42 @@ class _SOSPageState extends State<SOSPage> {
       );
     }
   }
+
+  void _listenInBackground() async {
+    bool available = await _speech.initialize(
+      onStatus: (status) {
+        print('Status: $status');
+      },
+      onError: (error) {
+        print('Error: $error');
+      },
+    );
+
+    if (available) {
+      _speech.listen(
+        onResult: (result) {
+          setState(() {
+            _text = result.recognizedWords;
+            if (_text.toLowerCase().contains(_selectedWord.toLowerCase())) {
+              _triggerSOS(context);
+            }
+          });
+        },
+        listenFor: Duration(hours: 1), // Listen for an hour
+        partialResults: false, // Only final results needed in background
+        cancelOnError: true,
+        listenMode: stt.ListenMode.dictation,
+        onSoundLevelChange: (level) {
+          // Adjust voice sensitivity based on the sound level
+          if (level > _sensitivity) {
+            // Voice detected, trigger action
+            print('Voice detected with level: $level');
+          }
+        },
+      );
+    }
+  }
+
 
   // void _triggerSOS(BuildContext context) {
   //   ScaffoldMessenger.of(context).showSnackBar(

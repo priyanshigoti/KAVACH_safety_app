@@ -11,7 +11,7 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners(); // Notify listeners to update the UI
   }
   List<SettingItem> settings = [
-    SettingItem(title: "Terminate Account", iconData: Icons.account_circle),
+  //  SettingItem(title: "Terminate Account", iconData: Icons.account_circle),
     SettingItem(title: "Log Out", iconData: Icons.settings_power_rounded),
 
     // Add more settings items as needed

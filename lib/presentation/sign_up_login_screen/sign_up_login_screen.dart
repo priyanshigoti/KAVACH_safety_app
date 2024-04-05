@@ -59,14 +59,14 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+
   Future<void> _signInWithGoogle() async {
     try {
       // Attempt to sign out if already signed in
       await _googleSignIn.signOut();
 
       // Start the sign-in flow
-      final GoogleSignInAccount? googleSignInAccount =
-      await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
 
       if (googleSignInAccount == null) {
         // User canceled the sign-in flow
@@ -92,8 +92,10 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
 
       if (user != null) {
         // Navigate to your desired screen after successful login
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
+
+        // Store user data in Firestore
+        await storeUserData(user, googleSignInAccount);
       }
     } catch (error) {
       print('Error signing in with Google: $error');
@@ -101,28 +103,25 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
     }
   }
 
-  // void login() {
-  //   if (_formkey.currentState!.validate()) {
-  //     FirebaseAuth.instance
-  //         .signInWithEmailAndPassword(
-  //       email: emailController.text.trim(),
-  //       password: passwordController.text.trim(),
-  //     )
-  //         .then((userCredential) {
-  //       // Login successful
-  //       String userEmail = userCredential.user!.email!;
-  //       Utils.showToast("Logged in as $userEmail");
-  //       Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => HomePage()),
-  //       );
-  //     }).catchError((error) {
-  //       // Login failed
-  //       debugPrint("Login error: $error");
-  //       Utils.showToast("Login failed. Please check your credentials.");
-  //     });
-  //   }
-  // }
+  Future<void> storeUserData(User user, GoogleSignInAccount googleSignInAccount) async {
+    // Create a Firestore reference to your users collection
+    final CollectionReference usersRef =
+    FirebaseFirestore.instance.collection('google_users');
+
+    // Check if the user already exists in Firestore
+    DocumentSnapshot userSnapshot = await usersRef.doc(user.uid).get();
+
+    if (!userSnapshot.exists) {
+      // If user doesn't exist, store the user data in Firestore
+      await usersRef.doc(user.uid).set({
+        'uid': user.uid,
+        'email': user.email,
+        'firstname': googleSignInAccount.displayName, // Store the user's name
+        // Add other user data you want to store
+      });
+    }
+  }
+
   void login() {
     if (_formkey.currentState!.validate()) {
       String email = emailController.text.trim();
@@ -130,7 +129,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
 
       // Check if the user is blocked
       FirebaseFirestore.instance
-          .collection('user')
+          .collection('all_users')
           .where('email', isEqualTo: email)
           .get()
           .then((QuerySnapshot querySnapshot) {
@@ -169,10 +168,6 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
       });
     }
   }
-
-
-
-
 
 
 
@@ -240,6 +235,7 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                         ),
                         SizedBox(height: 20),
                         TextFormField(
+                          style: TextStyle(color: Colors.black),
                           controller: passwordController,
                           decoration: InputDecoration(
                               border: OutlineInputBorder(
@@ -275,11 +271,11 @@ class _SignUpLoginScreenState extends State<SignUpLoginScreen> {
                           children: [
                             TextButton(
                               onPressed: () {
-                                //   Navigator.push(
-                                //       context,
-                                //       MaterialPageRoute(
-                                //           builder: (context) =>
-                                //               //email_recovery()));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              EmailRecovery()));
                               },
                               child: Text(
                                 "Forget Password?",
