@@ -34,12 +34,12 @@ class _FeedBackScreenState extends State<FeedBackScreen> {
         return;
       }
 
-     // Check if the email is registered
-      QuerySnapshot querySnapshot = await _firestore.collection('all_users').where('email', isEqualTo: email).get();
-      if (querySnapshot.docs.isEmpty) {
-        _showErrorDialog('Unregistered Email', 'Please enter a registered email address.');
-        return;
-      }
+     // // Check if the email is registered
+     //  QuerySnapshot querySnapshot = await _firestore.collection('all_users').where('email', isEqualTo: email).get();
+     //  if (querySnapshot.docs.isEmpty) {
+     //    _showErrorDialog('Unregistered Email', 'Please enter a registered email address.');
+     //    return;
+     //  }
 
       // Email is valid and registered, proceed to add feedback
       await _firestore.collection('feedback').add({
